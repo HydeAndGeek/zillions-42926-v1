@@ -18,6 +18,37 @@ async function loadSiteSettings() {
     setText('[data-cms="service_area"]',  s.service_area);
     setText('[data-cms="business_name"]', s.business_name);
 
+    // ----- Logo image (if uploaded, swap in for the SVG fallback) -----
+    if (s.logo) {
+      const img = document.querySelector('[data-cms="logo"]');
+      const svg = document.querySelector('[data-cms="logo-fallback"]');
+      if (img) {
+        img.src = s.logo;
+        if (s.logo_height) img.style.height = s.logo_height + 'px';
+        img.style.display = 'block';
+      }
+      if (svg) svg.style.display = 'none';
+    }
+    if (s.hide_text_logo) {
+      document.querySelectorAll('[data-cms="business_name_wrap"]').forEach(el => el.style.display = 'none');
+    }
+
+    // ----- Hero background image -----
+    if (s.hero_image) {
+      const hero = document.querySelector('[data-cms="hero-section"]');
+      if (hero) {
+        hero.style.backgroundImage =
+          "linear-gradient(180deg, rgba(28,51,31,0.55) 0%, rgba(28,51,31,0.65) 100%), url('" + s.hero_image + "')";
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundPosition = 'center';
+      }
+    }
+
+    // ----- Brand color (CSS variable, used wherever forest-700 is) -----
+    if (s.brand_color && /^#[0-9a-fA-F]{3,8}$/.test(s.brand_color)) {
+      document.documentElement.style.setProperty('--brand-color', s.brand_color);
+    }
+
     // phone / email — show only if set
     document.querySelectorAll('[data-cms="phone"]').forEach(el => {
       if (s.phone) {

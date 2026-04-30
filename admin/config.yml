@@ -26,6 +26,11 @@ collections:
         format: "json"
         fields:
           - { name: business_name, label: "Business Name", widget: string }
+          - { name: logo, label: "Logo (transparent PNG works best)", widget: image, required: false, hint: "Replaces the green circle icon next to the name in the header" }
+          - { name: logo_height, label: "Logo Height (px)", widget: number, default: 36, required: false, hint: "36 = small icon. 48 = medium. 64 = large." }
+          - { name: hide_text_logo, label: "Hide text next to logo?", widget: boolean, default: false, required: false, hint: "Turn ON if your logo image already contains the business name" }
+          - { name: hero_image, label: "Hero Background Photo", widget: image, required: false, hint: "The big photo behind the hero text. Leave blank to use the default." }
+          - { name: brand_color, label: "Brand Color (hex, e.g. #2f5233)", widget: string, default: "#2f5233", required: false }
           - { name: tagline, label: "Tagline (under hero title)", widget: string }
           - { name: hero_title, label: "Hero Title", widget: string }
           - { name: hero_subtitle, label: "Hero Subtitle", widget: text }
