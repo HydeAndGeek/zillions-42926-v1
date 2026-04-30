@@ -111,8 +111,75 @@ function escapeHtml(s) {
   }[c]));
 }
 
-// ----- 3. Run on page load --------------------------------------------------
+// ----- 3. Videos ------------------------------------------------------------
+async function loadVideos() {
+  const grid = document.querySelector('[data-cms="videos-grid"]');
+  const section = document.querySelector('[data-cms="videos-section"]');
+  if (!grid || !section) return;
+
+  try {
+    const res = await fetch('/content/videos/index.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    const items = await res.json();
+    const featured = items.filter(v => v.featured !== false);
+    if (featured.length === 0) return;
+
+    grid.innerHTML = featured.map(v => renderVideoCard(v)).join('');
+    section.removeAttribute('hidden');
+  } catch (err) {
+    console.info('Videos manifest not found yet');
+  }
+}
+
+function renderVideoCard(v) {
+  const title = escapeHtml(v.title || '');
+  const desc  = v.description ? `<p class="text-sm text-forest-900/70 mt-2">${escapeHtml(v.description)}</p>` : '';
+
+  let player = '';
+  const src = (v.source || 'YouTube').toLowerCase();
+
+  if (src.includes('youtube') && v.youtube_id) {
+    player = `
+      <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-forest-100">
+        <iframe class="absolute inset-0 w-full h-full"
+          src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.youtube_id)}?rel=0"
+          title="${title}" loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>`;
+  } else if (src.includes('vimeo') && v.vimeo_id) {
+    player = `
+      <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-forest-100">
+        <iframe class="absolute inset-0 w-full h-full"
+          src="https://player.vimeo.com/video/${encodeURIComponent(v.vimeo_id)}"
+          title="${title}" loading="lazy"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>`;
+  } else if (v.video_file) {
+    const poster = v.poster ? ` poster="${escapeHtml(v.poster)}"` : '';
+    player = `
+      <video class="w-full aspect-video rounded-xl bg-forest-100" controls preload="metadata" playsinline${poster}>
+        <source src="${escapeHtml(v.video_file)}" type="video/mp4">
+        Your browser doesn't support video playback.
+      </video>`;
+  } else {
+    return ''; // missing data, skip
+  }
+
+  return `
+    <figure>
+      ${player}
+      <figcaption class="mt-3">
+        <p class="font-display text-lg font-semibold text-forest-900">${title}</p>
+        ${desc}
+      </figcaption>
+    </figure>`;
+}
+
+// ----- 4. Run on page load --------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   loadSiteSettings();
   loadGallery();
+  loadVideos();
 });
