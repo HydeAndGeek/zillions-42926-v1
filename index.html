@@ -55,17 +55,36 @@
   }
 </style>
 
-<!-- Netlify Identity widget — keeps users logged in across sessions -->
+<!-- Netlify Identity widget — handles invite links + login -->
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
-  // After CMS login, redirect back to /admin
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
+  (function () {
+    if (!window.netlifyIdentity) return;
+
+    // Auto-open the widget when arriving via invite/recovery/confirmation token
+    var hash = window.location.hash || "";
+    if (
+      hash.indexOf("invite_token=") > -1 ||
+      hash.indexOf("recovery_token=") > -1 ||
+      hash.indexOf("confirmation_token=") > -1
+    ) {
+      window.netlifyIdentity.on("init", function () {
+        window.netlifyIdentity.open();
+      });
+    }
+
+    // After login or signup, send user to the CMS
+    window.netlifyIdentity.on("init", function (user) {
       if (!user) {
-        window.netlifyIdentity.on("login", () => { document.location.href = "/admin/"; });
+        window.netlifyIdentity.on("login", function () {
+          document.location.href = "/admin/";
+        });
+        window.netlifyIdentity.on("signup", function () {
+          document.location.href = "/admin/";
+        });
       }
     });
-  }
+  })();
 </script>
 
 <!-- LocalBusiness schema -->
