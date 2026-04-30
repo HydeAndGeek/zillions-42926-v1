@@ -1,0 +1,88 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Where new image uploads go
+media_folder: "uploads"
+public_folder: "/uploads"
+
+# Branch + PR workflow off (publish straight to live)
+publish_mode: simple
+
+site_url: https://zillionslandscaping.com
+display_url: https://zillionslandscaping.com
+logo_url: https://zillionslandscaping.com/images/hero.jpg
+
+collections:
+  # =========================================================
+  # SITE SETTINGS — phone, email, hours, hero text
+  # =========================================================
+  - name: settings
+    label: "Site Settings"
+    files:
+      - file: "content/_data/site.json"
+        label: "General Info"
+        name: "general"
+        format: "json"
+        fields:
+          - { name: business_name, label: "Business Name", widget: string }
+          - { name: tagline, label: "Tagline (under hero title)", widget: string }
+          - { name: hero_title, label: "Hero Title", widget: string }
+          - { name: hero_subtitle, label: "Hero Subtitle", widget: text }
+          - { name: phone, label: "Phone (leave blank to hide)", widget: string, required: false }
+          - { name: email, label: "Email (leave blank to hide)", widget: string, required: false }
+          - { name: hours, label: "Business Hours", widget: string, default: "Mon–Sat · 7am–6pm" }
+          - { name: service_area, label: "Service Area Text", widget: string, default: "Charlotte, NC and surrounding areas" }
+          - { name: hero_verse, label: "Hero Verse", widget: string, default: "“The earth is the Lord’s, and everything in it.” — Psalm 24:1" }
+          - { name: about_verse, label: "About Verse", widget: string, default: "“Whatever you do, work at it with all your heart, as working for the Lord.” — Colossians 3:23" }
+
+  # =========================================================
+  # GALLERY — drag photos from phone, add caption
+  # =========================================================
+  - name: gallery
+    label: "Gallery (Project Photos)"
+    label_singular: "Photo"
+    folder: "content/gallery"
+    create: true
+    delete: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: md
+    fields:
+      - { name: title, label: "Caption / Title", widget: string }
+      - { name: image, label: "Photo", widget: image }
+      - { name: date, label: "Date", widget: datetime, default: "" }
+      - { name: featured, label: "Show on homepage?", widget: boolean, default: true }
+      - { name: description, label: "Optional Description", widget: text, required: false }
+
+  # =========================================================
+  # SERVICES — edit the 6 service cards
+  # =========================================================
+  - name: services
+    label: "Services"
+    label_singular: "Service"
+    folder: "content/services"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: md
+    fields:
+      - { name: title, label: "Service Name", widget: string }
+      - { name: description, label: "Short Description", widget: text }
+      - { name: order, label: "Sort Order (1 = first)", widget: number, default: 1 }
+
+  # =========================================================
+  # POSTS — updates / blog
+  # =========================================================
+  - name: posts
+    label: "Updates / Posts"
+    label_singular: "Post"
+    folder: "content/posts"
+    create: true
+    delete: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: md
+    fields:
+      - { name: title, label: "Title", widget: string }
+      - { name: date, label: "Date", widget: datetime }
+      - { name: image, label: "Cover Image", widget: image, required: false }
+      - { name: body, label: "Body", widget: markdown }
