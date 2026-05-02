@@ -294,6 +294,15 @@
         #send-btn:hover:not(:disabled) { background: var(--accent-dark); }
         #send-btn:disabled { background: var(--border); cursor: not-allowed; }
 
+        /* Streaming cursor */
+        .stream-cursor {
+            display: inline-block; width: 2px; height: 1em;
+            background: var(--accent); border-radius: 1px;
+            animation: blink 0.9s infinite; margin-left: 2px;
+            vertical-align: text-bottom;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
         /* ===== MODEL PICKER ===== */
         #model-picker {
             background: var(--surface2);
@@ -1033,14 +1042,30 @@ async function sendMessage() {
 // ============================================================
 async function aiLoop(maxTurns = 10) {
     for (let turn = 0; turn < maxTurns; turn++) {
-        showTyping();
-        const reply = await callOpenRouter();
-        hideTyping();
+        // Create streaming message div immediately
+        const chat = document.getElementById('chat');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'msg assistant';
+        msgDiv.innerHTML = '<span class="stream-cursor">▋</span>';
+        chat.appendChild(msgDiv);
+        scrollChat();
+
+        const reply = await callOpenRouterStream(msgDiv);
 
         const actions = parseActions(reply);
         const displayText = stripActions(reply);
 
-        if (displayText) addMsg('assistant', displayText);
+        // Replace streaming content with final clean render
+        if (displayText) {
+            msgDiv.innerHTML = formatText(displayText);
+            const ts = document.createElement('div');
+            ts.className = 'msg-time';
+            ts.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            msgDiv.appendChild(ts);
+            savedMessages.push({ cls: 'assistant', html: msgDiv.innerHTML });
+        } else {
+            msgDiv.remove();
+        }
 
         if (actions.length === 0) {
             history.push({ role: 'assistant', content: reply });
@@ -1084,10 +1109,9 @@ async function aiLoop(maxTurns = 10) {
 }
 
 // ============================================================
-//  OPENROUTER CALL
+//  OPENROUTER STREAMING CALL
 // ============================================================
-async function callOpenRouter() {
-    // Keep history to last 30 exchanges to avoid token overflow
+async function callOpenRouterStream(msgDiv) {
     const trimmedHistory = history.slice(-30);
 
     const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -1104,6 +1128,7 @@ async function callOpenRouter() {
                 { role: 'system', content: systemPrompt() },
                 ...trimmedHistory
             ],
+            stream: true,
             max_tokens: 4096,
             temperature: 0.2
         })
@@ -1113,8 +1138,47 @@ async function callOpenRouter() {
         const e = await r.json().catch(() => ({}));
         throw new Error(e.error?.message || `OpenRouter error ${r.status}`);
     }
-    const data = await r.json();
-    return data.choices?.[0]?.message?.content || '';
+
+    const reader = r.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+    let sseBuffer = '';
+
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            sseBuffer += decoder.decode(value, { stream: true });
+
+            // Process complete SSE lines
+            const lines = sseBuffer.split('\n');
+            sseBuffer = lines.pop() || ''; // keep last incomplete line
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed === 'data: [DONE]') continue;
+                if (!trimmed.startsWith('data: ')) continue;
+                try {
+                    const parsed = JSON.parse(trimmed.slice(6));
+                    const token = parsed.choices?.[0]?.delta?.content;
+                    if (token) {
+                        fullText += token;
+                        // Live update — raw text + blinking cursor during stream
+                        msgDiv.innerHTML = formatText(fullText) + '<span class="stream-cursor">▋</span>';
+                        scrollChat();
+                    }
+                } catch(e) { /* skip malformed SSE chunk */ }
+            }
+        }
+    } finally {
+        reader.releaseLock();
+    }
+
+    // Remove cursor, show final formatted text
+    msgDiv.innerHTML = formatText(fullText);
+    scrollChat();
+    return fullText;
 }
 
 // ============================================================
