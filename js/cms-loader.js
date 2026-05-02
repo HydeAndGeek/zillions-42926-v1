@@ -135,12 +135,24 @@ function renderVideoCard(v) {
   const title = escapeHtml(v.title || '');
   const desc  = v.description ? `<p class="text-sm text-forest-900/70 mt-2">${escapeHtml(v.description)}</p>` : '';
 
+  // Aspect: portrait (Shorts/TikTok) = 9:16; square; default landscape 16:9
+  const orient = (v.orientation || '').toLowerCase();
+  let aspectClass = 'aspect-video';     // 16:9
+  let widthClass  = 'w-full';
+  if (orient.includes('portrait') || orient.includes('short') || orient.includes('9:16')) {
+    aspectClass = 'aspect-[9/16]';
+    widthClass  = 'w-full max-w-[360px] mx-auto';
+  } else if (orient.includes('square') || orient.includes('1:1')) {
+    aspectClass = 'aspect-square';
+    widthClass  = 'w-full max-w-[480px] mx-auto';
+  }
+
   let player = '';
   const src = (v.source || 'YouTube').toLowerCase();
 
   if (src.includes('youtube') && v.youtube_id) {
     player = `
-      <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-forest-100">
+      <div class="relative ${widthClass} ${aspectClass} rounded-xl overflow-hidden bg-forest-100">
         <iframe class="absolute inset-0 w-full h-full"
           src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.youtube_id)}?rel=0"
           title="${title}" loading="lazy"
@@ -149,7 +161,7 @@ function renderVideoCard(v) {
       </div>`;
   } else if (src.includes('vimeo') && v.vimeo_id) {
     player = `
-      <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-forest-100">
+      <div class="relative ${widthClass} ${aspectClass} rounded-xl overflow-hidden bg-forest-100">
         <iframe class="absolute inset-0 w-full h-full"
           src="https://player.vimeo.com/video/${encodeURIComponent(v.vimeo_id)}"
           title="${title}" loading="lazy"
@@ -159,7 +171,7 @@ function renderVideoCard(v) {
   } else if (v.video_file) {
     const poster = v.poster ? ` poster="${escapeHtml(v.poster)}"` : '';
     player = `
-      <video class="w-full aspect-video rounded-xl bg-forest-100" controls preload="metadata" playsinline${poster}>
+      <video class="${widthClass} ${aspectClass} rounded-xl bg-forest-100 object-cover" controls preload="metadata" playsinline${poster}>
         <source src="${escapeHtml(v.video_file)}" type="video/mp4">
         Your browser doesn't support video playback.
       </video>`;

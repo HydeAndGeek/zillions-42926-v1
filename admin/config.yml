@@ -80,6 +80,12 @@ collections:
         default: "YouTube"
         hint: "YouTube is recommended — free, fast, no bandwidth limits."
       - { name: youtube_id, label: "YouTube Video ID (the part after watch?v=)", widget: string, required: false, hint: "Example: from https://youtube.com/watch?v=dQw4w9WgXcQ paste dQw4w9WgXcQ" }
+      - name: orientation
+        label: "Video Orientation"
+        widget: select
+        options: ["Landscape (16:9)", "Portrait / Short (9:16)", "Square (1:1)"]
+        default: "Landscape (16:9)"
+        hint: "YouTube Shorts and TikToks are Portrait. Regular YouTube videos are Landscape."
       - { name: vimeo_id, label: "Vimeo Video ID", widget: string, required: false, hint: "The numbers at the end of the Vimeo URL" }
       - { name: video_file, label: "Upload Video File (MP4)", widget: file, required: false, hint: "Only use if NOT on YouTube/Vimeo. Keep under 50MB. Use a free converter if needed." }
       - { name: poster, label: "Thumbnail / Poster Image", widget: image, required: false, hint: "Screenshot of best frame. If blank, YouTube/Vimeo provides one automatically." }
