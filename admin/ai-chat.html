@@ -433,6 +433,8 @@
 
         <!-- Input -->
         <div id="input-area">
+            <button class="icon-btn" id="attach-btn" title="Upload image or video to repo" aria-label="Attach file" onclick="document.getElementById('file-input').click()">📎</button>
+            <input type="file" id="file-input" accept="image/*,video/mp4,video/quicktime" style="display:none" onchange="handleFileUpload(event)" />
             <textarea id="user-input"
                 placeholder="Ask me to update your website..."
                 rows="1"
@@ -992,6 +994,88 @@ function handleKey(e) {
 function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 130) + 'px';
+}
+
+// ============================================================
+//  FILE UPLOAD TO GITHUB
+// ============================================================
+async function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    event.target.value = ''; // reset so same file can be re-picked
+
+    if (!cfg.ghToken || !cfg.ghRepo) {
+        addMsg('error', '❌ Configure your GitHub token and repo in ⚙️ Settings first.');
+        return;
+    }
+
+    // Determine destination folder
+    const isVideo = file.type.startsWith('video/');
+    const folder = isVideo ? 'uploads' : 'uploads';
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-').toLowerCase();
+    const destPath = `${folder}/${safeName}`;
+
+    // Show uploading indicator
+    const uploadBlock = addActionBlock('⏳ Uploading…', destPath, `${(file.size / 1024).toFixed(0)} KB — ${file.type}`);
+
+    try {
+        // Read file as base64
+        const base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        // Check if file already exists (to get SHA for update)
+        let sha;
+        try { sha = (await ghRead(destPath)).sha; } catch(e) { /* new file */ }
+
+        // Upload via GitHub API
+        const url = `https://api.github.com/repos/${cfg.ghRepo}/contents/${destPath}`;
+        const r = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                Authorization: `token ${cfg.ghToken}`,
+                Accept: 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Upload ${isVideo ? 'video' : 'image'}: ${safeName}`,
+                content: base64,
+                branch: cfg.ghBranch,
+                ...(sha ? { sha } : {})
+            })
+        });
+
+        if (!r.ok) {
+            const e = await r.json().catch(() => ({}));
+            throw new Error(e.message || `Upload failed ${r.status}`);
+        }
+
+        // Show success
+        uploadBlock.className = 'action-block';
+        uploadBlock.innerHTML = `
+            <div class="a-label">✅ Uploaded to GitHub</div>
+            <div class="a-path">/${destPath}</div>
+            <div class="a-result">Path to use: /${destPath}\nSize: ${(file.size/1024).toFixed(0)} KB</div>
+        `;
+
+        // Auto-fill chat with context so AI can use the uploaded file
+        const input = document.getElementById('user-input');
+        const fileUrl = `/${destPath}`;
+        input.value = `I just uploaded a ${isVideo ? 'video' : 'photo'} to ${fileUrl}. ${isVideo ? 'Add it as a new video post.' : 'Add it to a new gallery post — ask me for the project title and description.'}`;
+        autoResize(input);
+        scrollChat();
+
+    } catch(e) {
+        uploadBlock.className = 'action-block error-block';
+        uploadBlock.innerHTML = `
+            <div class="a-label">❌ Upload failed</div>
+            <div class="a-path">${escHtml(destPath)}</div>
+            <div class="a-result">${escHtml(e.message)}</div>
+        `;
+    }
 }
 
 // ============================================================
