@@ -189,9 +189,138 @@ function renderVideoCard(v) {
     </figure>`;
 }
 
-// ----- 4. Run on page load --------------------------------------------------
+// ----- 4. Patio Maintenance — before/after carousel ------------------------
+async function loadMaintenance() {
+  const root = document.querySelector('[data-cms="ba-carousel"]');
+  if (!root) return;
+
+  let data;
+  try {
+    const res = await fetch('/content/_data/maintenance.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    data = await res.json();
+  } catch { return; }
+
+  // Headline / subhead from JSON (overrides static HTML if set)
+  setText('[data-cms="maintenance_headline"]', data.headline);
+  setText('[data-cms="maintenance_subhead"]',  data.subhead);
+
+  const pairs = (data.pairs || []).filter(p => p.before && p.after);
+  if (!pairs.length) return;
+
+  const track = root.querySelector('.ba-track');
+  const dots  = root.querySelector('.ba-dots');
+
+  // Render slides
+  track.innerHTML = pairs.map((p, i) => `
+    <figure class="ba-slide ${i === 0 ? 'active' : ''}" data-idx="${i}">
+      <div class="ba-pair grid grid-cols-2 gap-1 md:gap-2">
+        <div class="relative aspect-[4/5] md:aspect-[4/3] overflow-hidden">
+          <img src="${p.before}" alt="Before — ${escapeHtml(p.title || '')}" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
+          <span class="absolute top-3 left-3 bg-forest-900/85 text-cream-50 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full">Before</span>
+        </div>
+        <div class="relative aspect-[4/5] md:aspect-[4/3] overflow-hidden">
+          <img src="${p.after}" alt="After — ${escapeHtml(p.title || '')}" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
+          <span class="absolute top-3 right-3 bg-cream-50 text-forest-900 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full">After</span>
+        </div>
+      </div>
+      <figcaption class="px-5 py-4 bg-white">
+        <p class="font-display text-lg font-semibold text-forest-900">${escapeHtml(p.title || '')}</p>
+        ${p.caption ? `<p class="text-sm text-forest-900/70 mt-1">${escapeHtml(p.caption)}</p>` : ''}
+      </figcaption>
+    </figure>
+  `).join('');
+
+  // Render dots
+  dots.innerHTML = pairs.map((_, i) =>
+    `<button type="button" class="ba-dot w-2.5 h-2.5 rounded-full transition" data-idx="${i}" aria-label="Slide ${i + 1}"></button>`
+  ).join('');
+
+  // Inject slide CSS once
+  if (!document.getElementById('ba-style')) {
+    const style = document.createElement('style');
+    style.id = 'ba-style';
+    style.textContent = `
+      .ba-track { min-height: 320px; }
+      .ba-slide { position: absolute; inset: 0; opacity: 0; transition: opacity .55s ease; pointer-events: none; }
+      .ba-slide.active { position: relative; opacity: 1; pointer-events: auto; }
+      .ba-dot { background: #d6d3c8; }
+      .ba-dot.active { background: #2f5233; transform: scale(1.3); }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // State + controls
+  let idx = 0;
+  let timer = null;
+  const slides = root.querySelectorAll('.ba-slide');
+  const dotEls = root.querySelectorAll('.ba-dot');
+
+  function go(n) {
+    idx = (n + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    dotEls.forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+  function next() { go(idx + 1); }
+  function prev() { go(idx - 1); }
+  function start() { stop(); timer = setInterval(next, 5500); }
+  function stop()  { if (timer) clearInterval(timer); timer = null; }
+
+  go(0);
+  start();
+
+  root.querySelector('.ba-prev').addEventListener('click', () => { prev(); start(); });
+  root.querySelector('.ba-next').addEventListener('click', () => { next(); start(); });
+  dotEls.forEach(d => d.addEventListener('click', e => { go(+e.currentTarget.dataset.idx); start(); }));
+  root.addEventListener('mouseenter', stop);
+  root.addEventListener('mouseleave', start);
+
+  // Touch swipe
+  let tx = 0;
+  track.addEventListener('touchstart', e => { tx = e.touches[0].clientX; stop(); }, { passive: true });
+  track.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) (dx < 0 ? next : prev)();
+    start();
+  });
+
+  // Supervisor card overrides
+  if (data.supervisor) {
+    const img = document.querySelector('[data-cms="supervisor-img"]');
+    if (img && data.supervisor.image) img.src = data.supervisor.image;
+    setText('[data-cms="supervisor-title"]',   data.supervisor.title);
+    setText('[data-cms="supervisor-caption"]', data.supervisor.caption);
+  }
+}
+
+// ----- 5. Plantings grid ----------------------------------------------------
+async function loadPlantings() {
+  const grid = document.querySelector('[data-cms="plantings-grid"]');
+  if (!grid) return;
+
+  try {
+    const res = await fetch('/content/_data/plantings.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    setText('[data-cms="plantings_headline"]', data.headline);
+    setText('[data-cms="plantings_subhead"]',  data.subhead);
+    const items = data.items || [];
+    if (!items.length) return;
+    grid.innerHTML = items.map(it => `
+      <a href="${it.image}" class="group relative aspect-square block rounded-xl overflow-hidden bg-forest-100">
+        <img src="${it.image}" alt="${escapeHtml(it.title || '')}" loading="lazy"
+             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+        ${it.caption ? `<div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-forest-900/85 to-transparent text-cream-50 text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">${escapeHtml(it.caption)}</div>` : ''}
+      </a>
+    `).join('');
+  } catch { /* silent */ }
+}
+
+// ----- 6. Run on page load --------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   loadSiteSettings();
   loadGallery();
   loadVideos();
+  loadMaintenance();
+  loadPlantings();
 });

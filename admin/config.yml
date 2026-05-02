@@ -15,6 +15,57 @@ logo_url: https://zillionslandscaping.com/images/hero.jpg
 
 collections:
   # =========================================================
+  # PATIO MAINTENANCE — Before/After carousel + Linux
+  # =========================================================
+  - name: maintenance
+    label: "Patio Maintenance (Before/After)"
+    files:
+      - file: "content/_data/maintenance.json"
+        label: "Before / After Carousel"
+        name: "maintenance"
+        fields:
+          - { name: headline, label: "Section Headline", widget: string, default: "Bring your patio back." }
+          - { name: subhead,  label: "Section Subhead",  widget: text,   default: "Pressure wash and fresh polymer sand. Recommended every 2 to 3 years." }
+          - name: pairs
+            label: "Before / After Pairs"
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: title,   label: "Title",   widget: string }
+              - { name: before,  label: "Before Photo", widget: image }
+              - { name: after,   label: "After Photo",  widget: image }
+              - { name: caption, label: "Caption", widget: string, required: false }
+          - name: supervisor
+            label: "Site Supervisor (Linux) Card"
+            widget: object
+            required: false
+            fields:
+              - { name: image,   label: "Photo",   widget: image,  required: false }
+              - { name: title,   label: "Title",   widget: string, default: "Linux — Site Supervisor" }
+              - { name: caption, label: "Caption", widget: string, default: "On every job. Approves all paver work." }
+
+  # =========================================================
+  # PLANTINGS — In The Beds grid
+  # =========================================================
+  - name: plantings
+    label: "Plantings (In The Beds)"
+    files:
+      - file: "content/_data/plantings.json"
+        label: "Planting Photos"
+        name: "plantings"
+        fields:
+          - { name: headline, label: "Section Headline", widget: string, default: "What we planted. What's coming back." }
+          - { name: subhead,  label: "Section Subhead",  widget: text,   default: "Fresh installs and the beds we keep an eye on through the season." }
+          - name: items
+            label: "Photos"
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: image,   label: "Photo",   widget: image }
+              - { name: title,   label: "Title",   widget: string }
+              - { name: caption, label: "Caption", widget: string, required: false }
+
+  # =========================================================
   # SITE SETTINGS — phone, email, hours, hero text
   # =========================================================
   - name: settings

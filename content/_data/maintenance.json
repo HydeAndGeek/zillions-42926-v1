@@ -1,0 +1,47 @@
+{
+  "headline": "Bring your patio back.",
+  "subhead": "Pressure wash and fresh polymer sand. Recommended every 2 to 3 years to keep weeds out of the joints and the color crisp.",
+  "pairs": [
+    {
+      "title": "Weed-choked walkway",
+      "before": "/images/projects/676.jpg",
+      "after":  "/images/projects/692.jpg",
+      "caption": "Joint weeds and grime out. Color back."
+    },
+    {
+      "title": "Curved paver path",
+      "before": "/images/projects/670.jpg",
+      "after":  "/images/projects/693.jpg",
+      "caption": "Same path, washed and re-sanded."
+    },
+    {
+      "title": "Garden gate walkway",
+      "before": "/images/projects/673.jpg",
+      "after":  "/images/projects/695.jpg",
+      "caption": "Through the gate, joint by joint."
+    },
+    {
+      "title": "Pool deck pavers",
+      "before": "/images/projects/682.jpg",
+      "after":  "/images/projects/696.jpg",
+      "caption": "Stains lifted. Joints re-locked."
+    },
+    {
+      "title": "Sunken paver repair",
+      "before": "/images/projects/777.jpg",
+      "after":  "/images/projects/746.jpg",
+      "caption": "Pulled, re-leveled, and washed. The clean side speaks for itself."
+    },
+    {
+      "title": "Polymer sand close-up",
+      "before": "/images/projects/685.jpg",
+      "after":  "/images/projects/774.jpg",
+      "caption": "Polymer sand swept into clean joints — locks the surface for years."
+    }
+  ],
+  "supervisor": {
+    "image": "/images/projects/775.jpg",
+    "title": "Linux — Site Supervisor",
+    "caption": "On every job. Approves all paver work."
+  }
+}
