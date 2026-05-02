@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://zillionslandscaping.com/</loc>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://zillionslandscaping.com/images/og-image.jpg</image:loc>
+      <image:title>Zillions Landscaping</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://zillionslandscaping.com/images/logo-mark.png</image:loc>
+      <image:title>Zillions Landscaping logo</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://zillionslandscaping.com/images/hero.jpg</image:loc>
+      <image:title>Charlotte NC craftsman home with natural landscaping</image:title>
+    </image:image>
   </url>
 </urlset>
