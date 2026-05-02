@@ -45,6 +45,27 @@ collections:
               - { name: caption, label: "Caption", widget: string, default: "On every job. Approves all paver work." }
 
   # =========================================================
+  # FENCES & GATES grid
+  # =========================================================
+  - name: fences
+    label: "Fences & Gates"
+    files:
+      - file: "content/_data/fences.json"
+        label: "Fence & Gate Photos"
+        name: "fences"
+        fields:
+          - { name: headline, label: "Section Headline", widget: string, default: "Vinyl. Wood. Gates. Built to last." }
+          - { name: subhead,  label: "Section Subhead",  widget: text,   default: "Privacy panels, custom gates, fence repair and replacement." }
+          - name: items
+            label: "Photos"
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: image,   label: "Photo",   widget: image }
+              - { name: title,   label: "Title",   widget: string }
+              - { name: caption, label: "Caption", widget: string, required: false }
+
+  # =========================================================
   # PLANTINGS — In The Beds grid
   # =========================================================
   - name: plantings

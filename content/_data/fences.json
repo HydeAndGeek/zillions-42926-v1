@@ -1,0 +1,10 @@
+{
+  "headline": "Vinyl. Wood. Gates. Built to last.",
+  "subhead": "Privacy panels, custom gates, fence repair and replacement. Installed straight, plumbed true.",
+  "items": [
+    { "image": "/images/projects/708.jpg", "title": "Vinyl privacy fence", "caption": "Full panel install with corner post." },
+    { "image": "/images/projects/707.jpg", "title": "Vinyl gate detail",   "caption": "Square posts, clean reveals, hidden hardware." },
+    { "image": "/images/projects/710.jpg", "title": "Vinyl panel + gate",  "caption": "Tight gap, true plumb." },
+    { "image": "/images/projects/879.jpg", "title": "Custom wood gate",    "caption": "New treated pine slotted into existing stained fence." }
+  ]
+}

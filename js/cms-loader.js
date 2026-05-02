@@ -316,11 +316,37 @@ async function loadPlantings() {
   } catch { /* silent */ }
 }
 
-// ----- 6. Run on page load --------------------------------------------------
+// ----- 6. Fences & Gates grid -----------------------------------------------
+async function loadFences() {
+  const grid = document.querySelector('[data-cms="fences-grid"]');
+  if (!grid) return;
+  try {
+    const res = await fetch('/content/_data/fences.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    setText('[data-cms="fences_headline"]', data.headline);
+    setText('[data-cms="fences_subhead"]',  data.subhead);
+    const items = data.items || [];
+    if (!items.length) return;
+    grid.innerHTML = items.map(it => `
+      <a href="${it.image}" class="group relative aspect-[3/4] block rounded-xl overflow-hidden bg-forest-100">
+        <img src="${it.image}" alt="${escapeHtml(it.title || '')}" loading="lazy"
+             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+        <div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-forest-900/90 via-forest-900/40 to-transparent text-cream-50">
+          <p class="text-sm font-semibold">${escapeHtml(it.title || '')}</p>
+          ${it.caption ? `<p class="text-xs text-cream-50/80 mt-0.5">${escapeHtml(it.caption)}</p>` : ''}
+        </div>
+      </a>
+    `).join('');
+  } catch { /* silent */ }
+}
+
+// ----- 7. Run on page load --------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   loadSiteSettings();
   loadGallery();
   loadVideos();
   loadMaintenance();
   loadPlantings();
+  loadFences();
 });
