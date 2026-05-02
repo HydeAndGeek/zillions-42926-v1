@@ -294,6 +294,30 @@
         #send-btn:hover:not(:disabled) { background: var(--accent-dark); }
         #send-btn:disabled { background: var(--border); cursor: not-allowed; }
 
+        /* ===== MODEL PICKER ===== */
+        #model-picker {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 28px 6px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+            max-width: 170px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            transition: border-color 0.15s;
+            flex-shrink: 0;
+        }
+        #model-picker:focus, #model-picker:hover { border-color: var(--accent); }
+        #model-picker option, #model-picker optgroup { background: #1e293b; color: var(--text); }
+        @media (max-width: 480px) { #model-picker { max-width: 120px; font-size: 0.72rem; } }
+
         /* ===== DESKTOP ===== */
         @media (min-width: 720px) {
             #sidebar { display: flex; }
@@ -407,6 +431,9 @@
                 </div>
             </div>
             <div class="header-right">
+                <select id="model-picker" title="Switch AI model" aria-label="AI Model" onchange="switchModel(this.value)">
+                    <option value="">⏳ Add API key first…</option>
+                </select>
                 <button class="icon-btn" title="Clear conversation" onclick="clearHistory()">🗑️</button>
                 <button class="icon-btn" title="Settings" onclick="openSettings()">⚙️</button>
             </div>
@@ -505,6 +532,7 @@ function init() {
 
     updateLabel();
     updateSidebarInfo();
+    loadModels(); // Fetch live model list from OpenRouter
 
     document.getElementById('pw-input').addEventListener('keydown', e => {
         if (e.key === 'Enter') checkPw();
@@ -558,14 +586,118 @@ function saveSettings() {
     updateSidebarInfo();
     closeSettings();
     addMsg('system-msg', '✅ Settings saved!');
+    loadModels(); // Refresh model list with new API key
+}
+
+function switchModel(model) {
+    if (!model) return;
+    cfg.model = model;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+    updateLabel();
+    addMsg('system-msg', `🤖 Switched to **${model}**`);
+}
+
+// Fetch full live model list from OpenRouter and populate the picker
+async function loadModels() {
+    const picker = document.getElementById('model-picker');
+    if (!cfg.orKey) return; // need key to fetch models
+
+    try {
+        picker.innerHTML = '<option value="">⏳ Loading models…</option>';
+        const r = await fetch('https://openrouter.ai/api/v1/models', {
+            headers: { Authorization: `Bearer ${cfg.orKey}` }
+        });
+        if (!r.ok) throw new Error(`${r.status}`);
+        const { data } = await r.json();
+
+        // Sort by provider then name
+        data.sort((a, b) => a.id.localeCompare(b.id));
+
+        // Group by provider prefix
+        const groups = {};
+        for (const m of data) {
+            const provider = m.id.split('/')[0];
+            if (!groups[provider]) groups[provider] = [];
+            // Format price per 1M tokens for display
+            const promptPrice = m.pricing?.prompt
+                ? `$${(parseFloat(m.pricing.prompt) * 1e6).toFixed(2)}/1M`
+                : 'free';
+            groups[provider].push({ id: m.id, name: m.name || m.id, price: promptPrice, ctx: m.context_length });
+        }
+
+        // Build options
+        picker.innerHTML = '';
+        const providerOrder = ['anthropic', 'openai', 'google', 'meta-llama', 'deepseek', 'mistralai', 'cohere', 'perplexity'];
+        const orderedKeys = [
+            ...providerOrder.filter(p => groups[p]),
+            ...Object.keys(groups).filter(p => !providerOrder.includes(p)).sort()
+        ];
+
+        for (const provider of orderedKeys) {
+            const grp = document.createElement('optgroup');
+            grp.label = provider.charAt(0).toUpperCase() + provider.slice(1);
+            for (const m of groups[provider]) {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                const ctx = m.ctx ? ` · ${(m.ctx/1000).toFixed(0)}k ctx` : '';
+                opt.textContent = `${m.name}${ctx} · ${m.price}`;
+                grp.appendChild(opt);
+            }
+            picker.appendChild(grp);
+        }
+
+        // Select current model
+        picker.value = cfg.model;
+        if (!picker.value) {
+            // Current model not in list — add it
+            const opt = document.createElement('option');
+            opt.value = cfg.model;
+            opt.textContent = cfg.model;
+            picker.prepend(opt);
+            picker.value = cfg.model;
+        }
+
+        // Cache to localStorage so it works offline
+        try { localStorage.setItem('zillions_models_cache', JSON.stringify(data)); } catch(e) {}
+
+    } catch(e) {
+        // Fallback: restore cached models or show basic options
+        picker.innerHTML = `
+            <optgroup label="Claude">
+                <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet</option>
+                <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+            </optgroup>
+            <optgroup label="OpenAI">
+                <option value="openai/gpt-4o">GPT-4o</option>
+                <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+            </optgroup>
+            <optgroup label="Google">
+                <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</option>
+            </optgroup>
+        `;
+        picker.value = cfg.model;
+    }
 }
 
 function updateLabel() {
     const el = document.getElementById('repo-label');
     if (cfg.ghRepo) {
-        el.textContent = `${cfg.ghRepo} · ${cfg.ghBranch} · ${cfg.model.split('/').pop()}`;
+        el.textContent = `${cfg.ghRepo} · ${cfg.ghBranch}`;
     } else {
         el.textContent = 'Not configured — tap ⚙️ Settings';
+    }
+    // Sync the header model picker
+    const picker = document.getElementById('model-picker');
+    if (picker) {
+        // If current model isn't in the list, add it temporarily
+        const exists = Array.from(picker.options).some(o => o.value === cfg.model);
+        if (!exists) {
+            const opt = document.createElement('option');
+            opt.value = cfg.model;
+            opt.textContent = cfg.model.split('/').pop() + ' (custom)';
+            picker.appendChild(opt);
+        }
+        picker.value = cfg.model;
     }
 }
 
