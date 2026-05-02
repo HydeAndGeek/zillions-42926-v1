@@ -187,8 +187,48 @@
       <li><a href="#about" class="hover:text-forest-500">About</a></li>
       <li><a href="#contact" class="hover:text-forest-500">Contact</a></li>
     </ul>
-    <a href="#contact" class="hidden md:inline-block bg-forest-700 hover:bg-forest-900 text-cream-50 px-4 py-2 rounded-full text-sm font-semibold transition">Free Estimate</a>
+    <div class="flex items-center gap-3">
+      <a href="#contact" class="hidden md:inline-block bg-forest-700 hover:bg-forest-900 text-cream-50 px-4 py-2 rounded-full text-sm font-semibold transition">Free Estimate</a>
+      <!-- Hamburger button — mobile only -->
+      <button id="nav-toggle" class="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-1.5 rounded-lg hover:bg-forest-100 transition" aria-label="Open menu" aria-expanded="false">
+        <span class="block w-6 h-0.5 bg-forest-900 transition-all"></span>
+        <span class="block w-6 h-0.5 bg-forest-900 transition-all"></span>
+        <span class="block w-6 h-0.5 bg-forest-900 transition-all"></span>
+      </button>
+    </div>
   </nav>
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-cream-50 border-t border-forest-100 px-5 py-4">
+    <ul class="flex flex-col gap-4 text-sm font-medium text-forest-900 mb-4">
+      <li><a href="#services" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Services</a></li>
+      <li><a href="#builds" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Builds</a></li>
+      <li><a href="#fences" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Fences</a></li>
+      <li><a href="#maintenance" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Patios</a></li>
+      <li><a href="#plantings" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Plantings</a></li>
+      <li><a href="#gallery" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Gallery</a></li>
+      <li><a href="#videos" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Videos</a></li>
+      <li><a href="#about" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">About</a></li>
+      <li><a href="#contact" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Contact</a></li>
+    </ul>
+    <a href="#contact" onclick="closeMobileMenu()" class="block w-full text-center bg-forest-700 hover:bg-forest-900 text-cream-50 px-4 py-3 rounded-full text-sm font-semibold transition">Get a Free Estimate</a>
+  </div>
+  <script>
+    (function() {
+      var btn = document.getElementById('nav-toggle');
+      var menu = document.getElementById('mobile-menu');
+      if (!btn || !menu) return;
+      btn.addEventListener('click', function() {
+        var open = menu.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', !open ? 'false' : 'true');
+      });
+    })();
+    function closeMobileMenu() {
+      var menu = document.getElementById('mobile-menu');
+      var btn = document.getElementById('nav-toggle');
+      if (menu) menu.classList.add('hidden');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+  </script>
 </header>
 
 <!-- ============ HERO ============ -->
@@ -515,9 +555,13 @@
         <select id="service" name="service" class="w-full border border-forest-100 rounded-lg px-4 py-2.5 bg-white focus:border-forest-500 focus:ring-2 focus:ring-forest-500/20 outline-none">
           <option>New installation</option>
           <option>Design / build</option>
-          <option>Mulching</option>
-          <option>Cleanup</option>
+          <option>Custom treehouse or build</option>
+          <option>Fences &amp; gates</option>
+          <option>Patio restoration (pressure wash + polymer sand)</option>
+          <option>Natural mulching</option>
+          <option>Yard cleanup</option>
           <option>Pressure washing</option>
+          <option>Plantings</option>
           <option>Not sure — help me figure it out</option>
         </select>
       </div>
