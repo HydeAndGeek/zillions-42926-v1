@@ -90,7 +90,7 @@ async function loadGallery() {
     const res = await fetch('/content/gallery/index.json', { cache: 'no-store' });
     if (!res.ok) throw new Error('no manifest');
     const items = await res.json();
-    const featured = items.filter(i => i.featured !== false).slice(0, 6);
+    const featured = items.filter(i => i.featured !== false).slice(0, 12);
 
     if (featured.length === 0) return;
     grid.innerHTML = featured.map(item => `

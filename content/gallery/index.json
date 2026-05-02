@@ -1,9 +1,86 @@
 [
   {
-    "title": "Craftsman front yard refresh",
-    "image": "/images/hero.jpg",
+    "title": "Patio renovation — Myers Park, Charlotte NC",
+    "image": "/images/projects/696.jpg",
+    "date": "2026-05-02T15:37:00.000Z",
+    "featured": true,
+    "description": "15-year-old stone patio — pressure washed, joints re-sanded with polymer sand. Looked brand new again."
+  },
+  {
+    "title": "Sunken paver repair — pulled, re-leveled, washed",
+    "image": "/images/projects/746.jpg",
+    "date": "2026-05-02T15:00:00.000Z",
+    "featured": true,
+    "description": "Pulled the settled pavers, re-leveled the base, washed clean. The after speaks for itself."
+  },
+  {
+    "title": "Custom concrete patio with brick soldier-course border",
+    "image": "/images/projects/752.jpg",
+    "date": "2026-05-02T14:00:00.000Z",
+    "featured": true,
+    "description": "Custom-poured concrete patio with brick border. Sealed and color-coated."
+  },
+  {
+    "title": "Polymer sand joints — locked and crisp",
+    "image": "/images/projects/774.jpg",
+    "date": "2026-05-02T13:00:00.000Z",
+    "featured": true,
+    "description": "Fresh polymer sand swept into clean joints. Locks the surface and keeps weeds out for years."
+  },
+  {
+    "title": "Curved paver walkway — pressure washed and re-sanded",
+    "image": "/images/projects/693.jpg",
+    "date": "2026-05-02T12:00:00.000Z",
+    "featured": true,
+    "description": "Same path, washed and re-sanded. Weeds and grime gone."
+  },
+  {
+    "title": "Garden gate walkway — through the gate, joint by joint",
+    "image": "/images/projects/695.jpg",
+    "date": "2026-05-02T11:00:00.000Z",
+    "featured": true,
+    "description": "Color back, joints locked, weeds out."
+  },
+  {
+    "title": "Pressure washed walkway — Charlotte NC",
+    "image": "/images/projects/692.jpg",
+    "date": "2026-05-02T10:00:00.000Z",
+    "featured": true,
+    "description": "Weed-choked joints cleaned out. Color brought back."
+  },
+  {
+    "title": "Vinyl privacy fence — full panel install",
+    "image": "/images/projects/708.jpg",
+    "date": "2026-04-30T10:00:00.000Z",
+    "featured": true,
+    "description": "Full vinyl privacy panel install with corner post. Plumbed true."
+  },
+  {
+    "title": "Vinyl panel + custom gate",
+    "image": "/images/projects/710.jpg",
+    "date": "2026-04-30T09:00:00.000Z",
+    "featured": true,
+    "description": "Tight gap, true plumb. Clean hardware."
+  },
+  {
+    "title": "Custom wood gate — treated pine",
+    "image": "/images/projects/879.jpg",
     "date": "2026-04-29T15:00:00.000Z",
     "featured": true,
-    "description": "Fresh sod, natural mulch beds, new plantings."
+    "description": "New treated pine slotted into existing stained fence. Custom fit, built to last."
+  },
+  {
+    "title": "Japanese maple + boxwoods — new install",
+    "image": "/images/projects/1357.jpg",
+    "date": "2026-04-28T15:00:00.000Z",
+    "featured": true,
+    "description": "Fresh install — Japanese maple, boxwoods, natural mulch, clean established lines."
+  },
+  {
+    "title": "Hydrangea bed — stone edging",
+    "image": "/images/projects/874.jpg",
+    "date": "2026-04-27T15:00:00.000Z",
+    "featured": true,
+    "description": "Stone edging set, hydrangeas planted, ready for summer."
   }
 ]
