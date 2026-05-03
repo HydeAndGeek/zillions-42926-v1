@@ -970,7 +970,16 @@ ACTION:WRITE_FILE:path/to/file|Commit message
 [COMPLETE file content — never partial]
 ---CONTENT_END---
 
-## RULES
+## ⚠️ CRITICAL SAFETY RULES — NEVER VIOLATE THESE
+
+### index.html IS SACRED — 700+ lines of hand-crafted HTML
+- ALWAYS read index.html in full before any edit
+- NEVER overwrite index.html with a Jinja/template stub, partial content, or placeholder
+- NEVER reduce index.html to fewer than 600 lines — if your write would do that, STOP and ask the user
+- When editing index.html, make SURGICAL changes only — change only the specific section needed, keep everything else exactly as-is
+- If you are unsure about the full content of index.html, READ IT AGAIN before writing
+
+### General rules
 - ALWAYS read an existing file before editing it
 - When creating a NEW gallery post, first read one existing gallery post (e.g. content/gallery/2026-05-02-patio-renovation-charlotte-nc.md) to confirm the exact format, then write the new file
 - When creating a NEW video post, first read one existing video post (e.g. content/videos/2026-05-02-custom-treehouse.md) to confirm the exact format
