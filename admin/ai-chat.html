@@ -412,6 +412,30 @@
             <label>Access Password (protects this page)</label>
             <input type="password" id="set-password" placeholder="Leave blank to disable" autocomplete="new-password" />
         </div>
+
+        <!-- Device transfer section -->
+        <div class="form-group" style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+            <label>📱 Copy Settings to Another Device</label>
+            <p style="font-size:0.8rem;color:var(--muted);margin:0 0 8px">
+                Generates a one-time link containing all your keys &amp; settings.
+                Open it on mobile to auto-import everything.
+            </p>
+            <button type="button" onclick="generateSetupLink()" style="
+                background:var(--surface2);border:1px solid var(--border);color:var(--text);
+                padding:9px 14px;border-radius:8px;font-size:0.85rem;cursor:pointer;
+                width:100%;margin-bottom:8px;font-family:inherit;text-align:left;">
+                📤 Generate Setup Link
+            </button>
+            <input type="text" id="setup-link-out" readonly
+                placeholder="Click above to generate link…"
+                onclick="this.select()"
+                style="font-size:0.7rem;letter-spacing:0;word-break:break-all;cursor:pointer;" />
+            <div class="hint" style="color:#f59e0b;">
+                ⚠️ This link contains your API keys — never share it publicly.
+                Just open it in your mobile browser.
+            </div>
+        </div>
+
         <div class="btn-row">
             <button class="btn-secondary" onclick="closeSettings()">Cancel</button>
             <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
@@ -535,12 +559,29 @@ let busy = false;
 //  INIT
 // ============================================================
 function init() {
+    // 1. Load saved settings from this browser's localStorage
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) cfg = { ...cfg, ...JSON.parse(saved) };
     } catch(e) {}
 
-    // Restore conversation history
+    // 2. Check URL hash for cross-device settings import (#cfg=BASE64)
+    //    This runs AFTER localStorage so a fresh import overwrites stale data.
+    try {
+        const hash = window.location.hash;
+        if (hash.startsWith('#cfg=')) {
+            const decoded = JSON.parse(atob(hash.slice(5)));
+            cfg = { ...cfg, ...decoded };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+            // Remove hash from URL immediately so the link can't be reused accidentally
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+            // Notify user after DOM is ready
+            setTimeout(() => addMsg('system-msg',
+                '✅ <strong>Settings imported!</strong> Your API keys and preferences have been saved to this browser. You can now close the link.'), 200);
+        }
+    } catch(e) { console.warn('URL config import failed:', e); }
+
+    // 3. Restore conversation history
     try {
         const h = localStorage.getItem(HISTORY_KEY);
         if (h) {
@@ -558,7 +599,7 @@ function init() {
         }
     } catch(e) {}
 
-    // Password gate
+    // 4. Password gate
     if (cfg.password && !sessionStorage.getItem('z_admin_auth')) {
         document.getElementById('pw-overlay').classList.add('show');
     }
@@ -624,6 +665,23 @@ function saveSettings() {
     closeSettings();
     addMsg('system-msg', `✅ Settings saved! Max tokens: ${cfg.maxTokens} · History: ${cfg.maxHistory} messages`);
     loadModels();
+}
+
+// Generate a URL containing all current settings so the user can open it on another device
+function generateSetupLink() {
+    const encoded = btoa(JSON.stringify(cfg));
+    const url = `${window.location.origin}${window.location.pathname}#cfg=${encoded}`;
+    const input = document.getElementById('setup-link-out');
+    if (!input) return;
+    input.value = url;
+    input.select();
+    // Try clipboard API — works on most modern mobile browsers
+    try {
+        navigator.clipboard.writeText(url).then(() => {
+            input.style.borderColor = 'var(--accent)';
+            setTimeout(() => { input.style.borderColor = ''; }, 2500);
+        }).catch(() => {});
+    } catch(e) {}
 }
 
 function switchModel(model) {
