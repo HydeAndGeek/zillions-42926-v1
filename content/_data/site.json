@@ -1,17 +1,8 @@
 {
-  "business_name": "Zillions Landscaping",
-  "logo": "/images/logo-mark.png",
-  "logo_height": 56,
-  "hide_text_logo": false,
-  "hero_image": "/images/hero.jpg",
-  "brand_color": "#2f5233",
-  "tagline": "All-natural landscaping. Done with care.",
-  "hero_title": "All-natural landscaping. Done with care.",
-  "hero_subtitle": "No chemicals. No dyes. Native plants. Honest work, done by hand.",
-  "phone": "1-828-623-2506",
-  "email": "zillionsLandscaping@gmail.com",
-  "hours": "Mon–Sat · 7am–6pm",
-  "service_area": "Charlotte, NC and surrounding areas",
-  "hero_verse": "",
-  "about_verse": "\"Whatever you do, work at it with all your heart, as working for the Lord.\" — Colossians 3:23"
+  "businessName": "Zillions Landscaping",
+  "heroText": "Elevate Your Outdoor Oasis",
+  "phone": "(704) 555-1234",
+  "email": "info@zillionslandscaping.com",
+  "brandColor": "#4CAF50",
+  "ownerPhoto": "/uploads/owner-linux.jpg"
 }
