@@ -1,6 +1,6 @@
 ---
 title: "Zillions of Creation"
-source: "YouTube" 
+source: "YouTube"
 youtube_id: "kX8n_KsZ42M"
 orientation: "Landscape (16:9)"
 date: 2023-04-17T12:00:00.000Z
