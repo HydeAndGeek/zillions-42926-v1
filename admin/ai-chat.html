@@ -913,25 +913,48 @@ You have full read/write access to their GitHub repository: ${cfg.ghRepo || '[no
   • content/gallery/*.md — Project gallery posts (YAML frontmatter)
   • content/videos/*.md — Video posts (YAML frontmatter)
   • index.html — Main homepage (ALL sections embedded here)
-  • images/projects/ — Project photos (numbered by ID)
-  • uploads/ — CMS-uploaded images
+  • images/projects/ — Numbered project photos (e.g. /images/projects/691.jpg)
+  • uploads/ — All images/videos uploaded via the CMS or the 📎 button (e.g. /uploads/photo.jpg)
+
+## IMAGE PATHS
+- Images uploaded via the 📎 attach button → /uploads/filename.jpg
+- Pre-existing project photos → /images/projects/XXX.jpg
+- Hero/brand images → /images/hero.jpg, /images/logo-full.png, etc.
+- NEVER invent a path — if unsure, list the directory first to confirm the file exists.
 
 ## GALLERY POST FORMAT (content/gallery/YYYY-MM-DD-slug.md)
+EXACT fields — use only these, spell them exactly:
 \`\`\`
 ---
-title: "Title here"
-date: "2026-05-02"
-slug: "url-slug"
-coverImage: "/images/projects/XXX.jpg"
-images:
-  - src: "/images/projects/XXX.jpg"
-    caption: "Caption text"
-tags:
-  - patio
-  - charlotte-nc
-excerpt: "Short description for SEO"
+title: "Short descriptive caption"
+image: /uploads/photo.jpg
+date: 2026-05-02T15:00:00.000Z
+featured: true
+description: "Optional longer description for SEO"
 ---
 \`\`\`
+- "image" is a plain path string, no quotes needed but quotes are OK
+- "featured: true" shows it on the homepage gallery
+- "description" is optional — omit if not needed
+- DO NOT use: coverImage, slug, tags, excerpt, images[], src, caption — those fields do NOT exist
+
+## VIDEO POST FORMAT (content/videos/YYYY-MM-DD-slug.md)
+EXACT fields — use only these, spell them exactly:
+\`\`\`
+---
+title: "Video title"
+source: "YouTube"
+youtube_id: "VIDEO_ID_HERE"
+orientation: "Landscape (16:9)"
+date: 2026-05-02T18:00:00.000Z
+featured: true
+description: "Optional description"
+---
+\`\`\`
+- source options: "YouTube" | "Vimeo" | "Direct Upload"
+- orientation options: "Landscape (16:9)" | "Portrait / Short (9:16)" | "Square (1:1)"
+- vimeo_id, video_file, poster are optional — omit if not needed
+- For direct-upload videos the file path goes in "video_file"
 
 ## AVAILABLE ACTIONS
 
@@ -948,11 +971,13 @@ ACTION:WRITE_FILE:path/to/file|Commit message
 ---CONTENT_END---
 
 ## RULES
-- ALWAYS read a file before editing it
+- ALWAYS read an existing file before editing it
+- When creating a NEW gallery post, first read one existing gallery post (e.g. content/gallery/2026-05-02-patio-renovation-charlotte-nc.md) to confirm the exact format, then write the new file
+- When creating a NEW video post, first read one existing video post (e.g. content/videos/2026-05-02-custom-treehouse.md) to confirm the exact format
 - Write files with COMPLETE content only — never truncated
 - Keep commit messages short and descriptive
 - JSON files must stay valid JSON
-- When adding gallery posts, use today's date in the filename
+- Use today's date in new post filenames
 - When asked about improvements, be specific and reference their industry (local landscaping in Charlotte NC)
 
 ## RESPONSE STYLE
