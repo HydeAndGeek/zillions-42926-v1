@@ -1,5 +1,68 @@
 [
   {
+    "title": "Landscape build — hyperlapse",
+    "source": "YouTube",
+    "youtube_id": "VluEhZwXPjA",
+    "orientation": "Landscape (16:9)",
+    "date": "2026-05-03T12:00:00.000Z",
+    "featured": true,
+    "description": "Yard transformation in fast-forward — beds, mulch, edges, plantings, all in a few minutes."
+  },
+  {
+    "title": "Linux supervising, aka napping",
+    "source": "YouTube",
+    "youtube_id": "ZsAQTEcqu1I",
+    "orientation": "Landscape (16:9)",
+    "date": "2026-05-03T11:30:00.000Z",
+    "featured": true,
+    "description": "Site supervisor Linux on the clock. Eyes closed, but on duty."
+  },
+  {
+    "title": "Hydrangea install — Linux supervising",
+    "source": "YouTube",
+    "youtube_id": "NzW5RSZEnqk",
+    "orientation": "Landscape (16:9)",
+    "date": "2026-05-03T11:00:00.000Z",
+    "featured": true,
+    "description": "Hydrangeas going in, with Linux on quality control."
+  },
+  {
+    "title": "Pruning + brush prepped for City of Charlotte pickup",
+    "source": "YouTube",
+    "youtube_id": "hN-W2zKbZxI",
+    "orientation": "Landscape (16:9)",
+    "date": "2026-05-03T10:30:00.000Z",
+    "featured": true,
+    "description": "Example of pruning and cleanup done right — brush separated into piles no longer than 5 feet long and 3 feet high, with at least 2 feet between piles, ready for City of Charlotte yard waste pickup."
+  },
+  {
+    "title": "10+ yards of mulch — South Park, Charlotte",
+    "source": "YouTube",
+    "youtube_id": "EdNd89JCxZg",
+    "orientation": "Landscape (16:9)",
+    "date": "2026-05-03T10:00:00.000Z",
+    "featured": true,
+    "description": "Me and Linux dropping over 10 yards of natural mulch in South Park, Charlotte."
+  },
+  {
+    "title": "Sunday rest — woods walk with Linux",
+    "source": "YouTube",
+    "youtube_id": "IaMPzNL5_Qo",
+    "orientation": "Portrait / Short (9:16)",
+    "date": "2026-05-03T09:30:00.000Z",
+    "featured": true,
+    "description": "Six days of work, one day of rest. A quiet walk in the woods with Linux."
+  },
+  {
+    "title": "Landscape Makeover Charlotte — full hyperlapse with music",
+    "source": "YouTube",
+    "youtube_id": "WFA-apppusk",
+    "orientation": "Landscape (16:9)",
+    "date": "2026-05-03T09:00:00.000Z",
+    "featured": true,
+    "description": "Full Charlotte landscape makeover, set to music. The complete time-lapse from start to finish."
+  },
+  {
     "title": "Custom Treehouse Build",
     "source": "YouTube",
     "youtube_id": "xMQdAhwGvqE",
@@ -18,10 +81,28 @@
     "description": "What's actually in commercial weed killers — and why we choose natural alternatives on every job."
   },
   {
-    "title": "Hyperlapses",
+    "title": "Pressure washing — Before",
     "source": "YouTube",
     "youtube_id": "5ny37zgjo0s",
     "date": "2026-04-30T18:50:00.000Z",
-    "featured": true
+    "featured": true,
+    "description": "Before: weather-stained walkway. The grime hides the color underneath."
+  },
+  {
+    "title": "Pressure washing — After",
+    "source": "YouTube",
+    "youtube_id": "6vK4Lrs0tgc",
+    "date": "2026-04-30T18:49:00.000Z",
+    "featured": true,
+    "description": "After: same surface, color and crisp lines back. Years of weather lifted off."
+  },
+  {
+    "title": "Zillions of Creation",
+    "source": "YouTube",
+    "youtube_id": "kX8n_KsZ42M",
+    "orientation": "Landscape (16:9)",
+    "date": "2023-04-17T12:00:00.000Z",
+    "featured": true,
+    "description": "Explore the concept of 'Zillions of Creation' and how it inspires the work of Zillions Landscaping."
   }
 ]
