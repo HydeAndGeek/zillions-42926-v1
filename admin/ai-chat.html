@@ -387,6 +387,28 @@
             <input type="text" id="set-gh-branch" placeholder="main" value="main" />
         </div>
         <div class="form-group">
+            <label>Max Output Tokens per Reply</label>
+            <select id="set-max-tokens">
+                <option value="500">500 — Very short replies (cheapest)</option>
+                <option value="1000">1000 — Short replies (recommended)</option>
+                <option value="1500">1500 — Medium replies</option>
+                <option value="2000">2000 — Longer replies</option>
+                <option value="3000">3000 — Long code edits</option>
+                <option value="4000">4000 — Maximum (most expensive)</option>
+            </select>
+            <div class="hint">Lower = cheaper. For simple questions use 500–1000. For file edits use 2000–3000.</div>
+        </div>
+        <div class="form-group">
+            <label>Conversation Memory (messages kept)</label>
+            <select id="set-max-history">
+                <option value="4">4 messages (minimal context, cheapest)</option>
+                <option value="8">8 messages (recommended)</option>
+                <option value="16">16 messages (more context)</option>
+                <option value="24">24 messages (most context, expensive)</option>
+            </select>
+            <div class="hint">Higher = AI remembers more, but costs more tokens per message.</div>
+        </div>
+        <div class="form-group">
             <label>Access Password (protects this page)</label>
             <input type="password" id="set-password" placeholder="Leave blank to disable" autocomplete="new-password" />
         </div>
@@ -496,12 +518,14 @@ const STORAGE_KEY = 'zillions_admin_ai_v1';
 const HISTORY_KEY = 'zillions_ai_history_v1';
 
 let cfg = {
-    model: 'anthropic/claude-3.5-sonnet',
+    model: 'anthropic/claude-3-haiku',   // cheap default — user can upgrade
     orKey: '',
     ghToken: '',
     ghRepo: 'HydeAndGeek/zillions-42926-v1',
     ghBranch: 'main',
-    password: ''
+    password: '',
+    maxTokens: 1000,   // output token limit per call — keep low to save $
+    maxHistory: 8      // how many past messages to send (each costs tokens)
 };
 
 let history = [];   // conversation history
@@ -573,6 +597,8 @@ function openSettings() {
     document.getElementById('set-gh-token').value = cfg.ghToken;
     document.getElementById('set-gh-repo').value = cfg.ghRepo;
     document.getElementById('set-gh-branch').value = cfg.ghBranch || 'main';
+    document.getElementById('set-max-tokens').value = String(cfg.maxTokens || 1000);
+    document.getElementById('set-max-history').value = String(cfg.maxHistory || 8);
     document.getElementById('set-password').value = cfg.password;
     document.getElementById('settings-overlay').classList.add('show');
 }
@@ -584,18 +610,20 @@ function closeSettings(e) {
 }
 
 function saveSettings() {
-    cfg.model    = document.getElementById('set-model').value;
-    cfg.orKey    = document.getElementById('set-or-key').value.trim();
-    cfg.ghToken  = document.getElementById('set-gh-token').value.trim();
-    cfg.ghRepo   = document.getElementById('set-gh-repo').value.trim();
-    cfg.ghBranch = document.getElementById('set-gh-branch').value.trim() || 'main';
-    cfg.password = document.getElementById('set-password').value;
+    cfg.model      = document.getElementById('set-model').value;
+    cfg.orKey      = document.getElementById('set-or-key').value.trim();
+    cfg.ghToken    = document.getElementById('set-gh-token').value.trim();
+    cfg.ghRepo     = document.getElementById('set-gh-repo').value.trim();
+    cfg.ghBranch   = document.getElementById('set-gh-branch').value.trim() || 'main';
+    cfg.maxTokens  = parseInt(document.getElementById('set-max-tokens').value, 10) || 1000;
+    cfg.maxHistory = parseInt(document.getElementById('set-max-history').value, 10) || 8;
+    cfg.password   = document.getElementById('set-password').value;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
     updateLabel();
     updateSidebarInfo();
     closeSettings();
-    addMsg('system-msg', '✅ Settings saved!');
-    loadModels(); // Refresh model list with new API key
+    addMsg('system-msg', `✅ Settings saved! Max tokens: ${cfg.maxTokens} · History: ${cfg.maxHistory} messages`);
+    loadModels();
 }
 
 function switchModel(model) {
@@ -1040,7 +1068,15 @@ async function sendMessage() {
 // ============================================================
 //  AI LOOP
 // ============================================================
-async function aiLoop(maxTurns = 10) {
+// FILE_MAX_CHARS: file content sent to AI is truncated here to control token use
+const FILE_MAX_CHARS = 4000;
+
+async function aiLoop(maxTurns = 8) {
+    // KEY FIX: loopMessages holds the full action chain for THIS request only.
+    // File contents go in loopMessages but NEVER into the permanent history[].
+    // history[] only stores compact user/AI conversation summaries.
+    const loopMessages = [...history];
+
     for (let turn = 0; turn < maxTurns; turn++) {
         // Create streaming message div immediately
         const chat = document.getElementById('chat');
@@ -1050,7 +1086,7 @@ async function aiLoop(maxTurns = 10) {
         chat.appendChild(msgDiv);
         scrollChat();
 
-        const reply = await callOpenRouterStream(msgDiv);
+        const reply = await callOpenRouterStream(loopMessages, msgDiv);
 
         const actions = parseActions(reply);
         const displayText = stripActions(reply);
@@ -1068,23 +1104,35 @@ async function aiLoop(maxTurns = 10) {
         }
 
         if (actions.length === 0) {
-            history.push({ role: 'assistant', content: reply });
+            // Done — store ONLY a compact summary in permanent history (not file contents)
+            if (displayText) {
+                history.push({ role: 'assistant', content: displayText.slice(0, 800) });
+            }
+            loopMessages.push({ role: 'assistant', content: reply });
             break;
         }
 
-        let resultSummary = '';
+        // ---- Execute actions ----
+        let resultSummary = '';    // goes into loopMessages (temp, full content)
+        let histSummary = '';     // goes into history[] (compact, no file content)
 
         for (const action of actions) {
             try {
                 if (action.type === 'READ_FILE') {
                     const { content, sha } = await ghRead(action.path);
-                    addActionBlock('📖 Read file', action.path, content.slice(0, 400));
-                    resultSummary += `\n=== FILE: ${action.path} (sha: ${sha}) ===\n${content}\n=== END ===\n`;
+                    // Truncate to FILE_MAX_CHARS to limit token use
+                    const truncated = content.length > FILE_MAX_CHARS
+                        ? content.slice(0, FILE_MAX_CHARS) + `\n\n[...truncated at ${FILE_MAX_CHARS} chars — full file has ${content.length} chars]`
+                        : content;
+                    addActionBlock('📖 Read file', action.path, content.slice(0, 300));
+                    resultSummary += `\n=== FILE: ${action.path} (sha: ${sha}) ===\n${truncated}\n=== END ===\n`;
+                    histSummary += `Read ${action.path} (${content.length} chars). `;
 
                 } else if (action.type === 'LIST_FILES') {
                     const listing = await ghList(action.path);
                     addActionBlock('📁 Directory listing', action.path || '/', listing);
                     resultSummary += `\n=== LISTING: ${action.path || '/'} ===\n${listing}\n=== END ===\n`;
+                    histSummary += `Listed ${action.path || '/'}. `;
 
                 } else if (action.type === 'WRITE_FILE') {
                     let sha;
@@ -1092,15 +1140,18 @@ async function aiLoop(maxTurns = 10) {
                     await ghWrite(action.path, action.content, action.commitMsg, sha);
                     addActionBlock('✅ Committed to GitHub', action.path, action.commitMsg || 'File updated');
                     resultSummary += `\n=== WRITTEN: ${action.path} ✅ ===\n`;
+                    histSummary += `Wrote ${action.path}. `;
                 }
             } catch(e) {
                 addActionBlock('❌ Action failed', action.path, e.message, true);
                 resultSummary += `\n=== ERROR on ${action.path}: ${e.message} ===\n`;
+                histSummary += `Error on ${action.path}: ${e.message}. `;
             }
         }
 
-        history.push({ role: 'assistant', content: reply });
-        history.push({
+        // Add to loopMessages only (file content stays out of history[])
+        loopMessages.push({ role: 'assistant', content: reply });
+        loopMessages.push({
             role: 'user',
             content: `Action results:${resultSummary}\n\nContinue based on these results.`
         });
@@ -1111,8 +1162,10 @@ async function aiLoop(maxTurns = 10) {
 // ============================================================
 //  OPENROUTER STREAMING CALL
 // ============================================================
-async function callOpenRouterStream(msgDiv) {
-    const trimmedHistory = history.slice(-30);
+// Takes explicit messages array so action loop context stays out of history[]
+async function callOpenRouterStream(messages, msgDiv) {
+    // Trim to cfg.maxHistory to prevent runaway context growth
+    const trimmed = messages.slice(-(cfg.maxHistory || 8));
 
     const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -1126,10 +1179,10 @@ async function callOpenRouterStream(msgDiv) {
             model: cfg.model,
             messages: [
                 { role: 'system', content: systemPrompt() },
-                ...trimmedHistory
+                ...trimmed
             ],
             stream: true,
-            max_tokens: 4096,
+            max_tokens: cfg.maxTokens || 1000,  // user-configurable, default 1000
             temperature: 0.2
         })
     });
@@ -1151,20 +1204,18 @@ async function callOpenRouterStream(msgDiv) {
 
             sseBuffer += decoder.decode(value, { stream: true });
 
-            // Process complete SSE lines
             const lines = sseBuffer.split('\n');
-            sseBuffer = lines.pop() || ''; // keep last incomplete line
+            sseBuffer = lines.pop() || '';
 
             for (const line of lines) {
-                const trimmed = line.trim();
-                if (!trimmed || trimmed === 'data: [DONE]') continue;
-                if (!trimmed.startsWith('data: ')) continue;
+                const trimmedLine = line.trim();
+                if (!trimmedLine || trimmedLine === 'data: [DONE]') continue;
+                if (!trimmedLine.startsWith('data: ')) continue;
                 try {
-                    const parsed = JSON.parse(trimmed.slice(6));
+                    const parsed = JSON.parse(trimmedLine.slice(6));
                     const token = parsed.choices?.[0]?.delta?.content;
                     if (token) {
                         fullText += token;
-                        // Live update — raw text + blinking cursor during stream
                         msgDiv.innerHTML = formatText(fullText) + '<span class="stream-cursor">▋</span>';
                         scrollChat();
                     }
@@ -1175,7 +1226,6 @@ async function callOpenRouterStream(msgDiv) {
         reader.releaseLock();
     }
 
-    // Remove cursor, show final formatted text
     msgDiv.innerHTML = formatText(fullText);
     scrollChat();
     return fullText;
