@@ -168,6 +168,26 @@ function renderVideoCard(v) {
           allow="autoplay; fullscreen; picture-in-picture"
           allowfullscreen></iframe>
       </div>`;
+  } else if (src.includes('facebook') && v.facebook_url) {
+    const fbUrl = escapeHtml(v.facebook_url);
+    const posterStyle = v.poster ? `background-image:linear-gradient(180deg,rgba(28,51,31,0.25) 0%,rgba(28,51,31,0.75) 100%),url('${escapeHtml(v.poster)}');background-size:cover;background-position:center;` : '';
+    player = `
+      <a href="${fbUrl}" target="_blank" rel="noopener noreferrer"
+         class="group relative ${widthClass} ${aspectClass} rounded-xl overflow-hidden bg-forest-900 flex items-center justify-center text-cream-50 hover:opacity-95 transition"
+         style="${posterStyle}"
+         aria-label="${title} — watch on Facebook">
+        <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center px-6">
+          <svg class="w-14 h-14 opacity-95 group-hover:scale-105 transition-transform" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <span class="inline-flex items-center gap-2 bg-cream-50 text-forest-900 px-4 py-2 rounded-full text-sm font-semibold shadow">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.08 5.66 21.24 10.44 22v-7.03H7.9v-2.91h2.54V9.84c0-2.52 1.49-3.91 3.78-3.91 1.1 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22C18.34 21.24 22 17.08 22 12.06z"/>
+            </svg>
+            Watch on Facebook
+          </span>
+        </div>
+      </a>`;
   } else if (v.video_file) {
     const poster = v.poster ? ` poster="${escapeHtml(v.poster)}"` : '';
     player = `

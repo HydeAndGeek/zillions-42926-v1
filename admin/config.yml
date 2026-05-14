@@ -148,10 +148,11 @@ collections:
       - name: source
         label: "Where is the video hosted?"
         widget: select
-        options: ["YouTube", "Vimeo", "Direct Upload"]
+        options: ["YouTube", "Vimeo", "Facebook", "Direct Upload"]
         default: "YouTube"
         hint: "YouTube is recommended — free, fast, no bandwidth limits."
       - { name: youtube_id, label: "YouTube Video ID (the part after watch?v=)", widget: string, required: false, hint: "Example: from https://youtube.com/watch?v=dQw4w9WgXcQ paste dQw4w9WgXcQ" }
+      - { name: facebook_url, label: "Facebook Video URL", widget: string, required: false, hint: "Full URL to the Facebook video or share link. Renders a 'Watch on Facebook' card that opens in a new tab." }
       - name: orientation
         label: "Video Orientation"
         widget: select
