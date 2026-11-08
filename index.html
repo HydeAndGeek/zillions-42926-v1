@@ -131,6 +131,23 @@
   @media (max-width: 640px) {
     .sticky-cta { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; }
   }
+  /* Planner chips */
+  .plan-chip {
+    border: 1px solid #c9dccb; background: #fff; color: #1c331f;
+    padding: 0.55rem 1rem; border-radius: 9999px; font-size: 0.9rem; font-weight: 500;
+    transition: all .15s ease; cursor: pointer; line-height: 1.2;
+  }
+  .plan-chip:hover { border-color: #2f5233; }
+  .plan-chip.is-on { background: #2f5233; border-color: #2f5233; color: #fbf8f1; }
+  .plan-chip:focus-visible { outline: 2px solid #2f5233; outline-offset: 2px; }
+  /* Gallery lightbox */
+  #lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(28,51,31,0.94); display: none; align-items: center; justify-content: center; }
+  #lightbox.is-open { display: flex; }
+  #lightbox img { max-width: min(92vw, 1100px); max-height: 78vh; border-radius: 0.75rem; box-shadow: 0 20px 60px rgba(0,0,0,.5); background:#1c331f; }
+  .lb-btn { position: absolute; background: rgba(251,248,241,0.12); color: #fbf8f1; border: 0; width: 44px; height: 44px; border-radius: 9999px; font-size: 22px; cursor: pointer; display:flex; align-items:center; justify-content:center; }
+  .lb-btn:hover { background: rgba(251,248,241,0.25); }
+  .gallery-more.is-hidden { display: none; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
 
 <!-- Netlify Identity widget — handles invite links + login -->
@@ -182,12 +199,11 @@
       </svg>
       <span data-cms="business_name_wrap" class="font-display text-xl font-semibold text-forest-900"><span data-cms="business_name">Zillions <span class="text-forest-500">Landscaping</span></span></span>
     </a>
-    <ul class="hidden md:flex gap-7 text-sm font-medium text-forest-900">
+    <ul class="hidden md:flex gap-6 text-sm font-medium text-forest-900">
       <li><a href="#services" class="hover:text-forest-500">Services</a></li>
+      <li><a href="#winter" class="hover:text-forest-500">Winter</a></li>
+      <li><a href="#planner" class="hover:text-forest-500">Planner</a></li>
       <li><a href="#builds" class="hover:text-forest-500">Builds</a></li>
-      <li><a href="#fences" class="hover:text-forest-500">Fences</a></li>
-      <li><a href="#maintenance" class="hover:text-forest-500">Patios</a></li>
-      <li><a href="#plantings" class="hover:text-forest-500">Plantings</a></li>
       <li><a href="#gallery" class="hover:text-forest-500">Gallery</a></li>
       <li><a href="#videos" class="hover:text-forest-500">Videos</a></li>
       <li><a href="#about" class="hover:text-forest-500">About</a></li>
@@ -208,10 +224,9 @@
   <div id="mobile-menu" class="hidden md:hidden bg-cream-50 border-t border-forest-100 px-5 py-4">
     <ul class="flex flex-col gap-4 text-sm font-medium text-forest-900 mb-4">
       <li><a href="#services" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Services</a></li>
+      <li><a href="#winter" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Winter Projects</a></li>
+      <li><a href="#planner" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Project Planner</a></li>
       <li><a href="#builds" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Builds</a></li>
-      <li><a href="#fences" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Fences</a></li>
-      <li><a href="#maintenance" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Patios</a></li>
-      <li><a href="#plantings" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Plantings</a></li>
       <li><a href="#gallery" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Gallery</a></li>
       <li><a href="#videos" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">Videos</a></li>
       <li><a href="#about" class="block py-1 hover:text-forest-500" onclick="closeMobileMenu()">About</a></li>
@@ -242,7 +257,10 @@
 <!-- ============ HERO ============ -->
 <section id="top" data-cms="hero-section" class="hero-bg min-h-[85vh] flex items-center">
   <div class="max-w-6xl mx-auto px-5 py-24 text-cream-50">
-    <p class="uppercase tracking-[0.2em] text-xs md:text-sm text-cream-100/90 mb-5">Charlotte, NC · Family-Owned</p>
+    <p class="uppercase tracking-[0.2em] text-xs md:text-sm text-cream-100/90 mb-5 flex flex-wrap items-center gap-x-3 gap-y-2">
+      <span>Charlotte, NC · Family-Owned</span>
+      <span data-cms="hero_eyebrow_tag" class="inline-block border border-cream-50/50 bg-cream-50/10 text-cream-50 rounded-full px-3 py-1 text-[11px] md:text-xs tracking-[0.15em]">Now booking winter projects</span>
+    </p>
     <p data-cms="hero_verse" class="verse text-cream-100/90 text-base md:text-lg max-w-xl mb-6">
       &ldquo;In the beginning God created the heaven and the earth.&rdquo; — Genesis 1:1
     </p>
@@ -254,8 +272,70 @@
     </p>
     <div class="flex flex-wrap gap-3">
       <a href="#contact" class="bg-cream-50 hover:bg-cream-100 text-forest-900 px-6 py-3 rounded-full font-semibold transition">Get a Free Estimate</a>
-      <a href="#contact" class="border border-cream-50/60 hover:bg-cream-50/10 text-cream-50 px-6 py-3 rounded-full font-semibold transition">Send Photos of Your Yard</a>
+      <a href="#planner" class="border border-cream-50/60 hover:bg-cream-50/10 text-cream-50 px-6 py-3 rounded-full font-semibold transition">Plan a Winter Project</a>
     </div>
+  </div>
+</section>
+
+<!-- ============ WINTER SEASON ============ -->
+<section id="winter" class="py-20 md:py-28 bg-forest-900 text-cream-50 relative overflow-hidden">
+  <div class="absolute inset-0 opacity-[0.07] pointer-events-none" aria-hidden="true"
+       style="background-image:url('/images/projects/1368.jpg');background-size:cover;background-position:center;"></div>
+  <div class="max-w-6xl mx-auto px-5 relative">
+    <div class="grid md:grid-cols-5 gap-10 md:gap-14 items-end mb-12">
+      <div class="md:col-span-3">
+        <p class="uppercase tracking-[0.2em] text-xs text-cream-100/70 mb-4">Winter 2026–27</p>
+        <h2 data-cms="winter_headline" class="font-display font-semibold text-3xl md:text-5xl leading-tight mb-5">
+          Winter is build season in Charlotte.
+        </h2>
+        <p data-cms="winter_intro" class="text-cream-100/85 text-lg max-w-2xl">
+          Most people wait for April. The yards that look finished in April were planned in December. Cooler soil, firmer ground, and an open calendar make winter the smartest time to plant, prune, and build.
+        </p>
+      </div>
+      <div class="md:col-span-2 bg-cream-50 text-forest-900 rounded-2xl p-6 md:p-7 shadow-lg">
+        <p class="uppercase tracking-[0.2em] text-[11px] text-forest-500 mb-2">This Season</p>
+        <p data-cms="winter_offer" class="font-display text-xl md:text-2xl font-semibold leading-snug mb-4">
+          Now booking December–March. Winter is our most open calendar of the year, which means faster scheduling for you.
+        </p>
+        <a href="#planner" class="inline-block bg-forest-700 hover:bg-forest-900 text-cream-50 px-5 py-2.5 rounded-full font-semibold text-sm transition">Plan my project →</a>
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <article class="bg-forest-700/60 border border-cream-50/10 rounded-2xl p-6 backdrop-blur-sm">
+        <div class="w-10 h-10 rounded-full bg-cream-50/10 flex items-center justify-center mb-4">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbf8f1" stroke-width="2" stroke-linecap="round"><path d="M12 22 V10"/><path d="M12 10 C 6 10, 5 4, 5 3 C 10 3, 12 6, 12 10 Z"/><path d="M12 13 C 18 13, 19 7, 19 6 C 14 6, 12 9, 12 13 Z"/></svg>
+        </div>
+        <p class="text-xs uppercase tracking-[0.15em] text-cream-100/60 mb-1">Nov – Feb</p>
+        <h3 class="font-display text-xl font-semibold mb-2">Plant now, not in May</h3>
+        <p class="text-cream-100/80 text-[15px] leading-relaxed">Trees and shrubs set in cool months grow roots all winter and meet their first Charlotte summer established instead of stressed.</p>
+      </article>
+      <article class="bg-forest-700/60 border border-cream-50/10 rounded-2xl p-6 backdrop-blur-sm">
+        <div class="w-10 h-10 rounded-full bg-cream-50/10 flex items-center justify-center mb-4">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbf8f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3 L18 15"/><path d="M18 3 L6 15"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/></svg>
+        </div>
+        <p class="text-xs uppercase tracking-[0.15em] text-cream-100/60 mb-1">Jan – early Mar</p>
+        <h3 class="font-display text-xl font-semibold mb-2">Dormant pruning</h3>
+        <p class="text-cream-100/80 text-[15px] leading-relaxed">Crape myrtles, hollies, boxwoods, and summer bloomers get shaped while they sleep. Azaleas and camellias wait until after they flower.</p>
+      </article>
+      <article class="bg-forest-700/60 border border-cream-50/10 rounded-2xl p-6 backdrop-blur-sm">
+        <div class="w-10 h-10 rounded-full bg-cream-50/10 flex items-center justify-center mb-4">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbf8f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21 H21"/><path d="M5 21 V11 L12 5 L19 11 V21"/><path d="M9 21 V15 H15 V21"/></svg>
+        </div>
+        <p class="text-xs uppercase tracking-[0.15em] text-cream-100/60 mb-1">Dec – Mar</p>
+        <h3 class="font-display text-xl font-semibold mb-2">Build season</h3>
+        <p class="text-cream-100/80 text-[15px] leading-relaxed">Patios, fences, treehouses, raised beds. Firm ground, no growing season to work around, and it is finished before the spring rush starts.</p>
+      </article>
+      <article class="bg-forest-700/60 border border-cream-50/10 rounded-2xl p-6 backdrop-blur-sm">
+        <div class="w-10 h-10 rounded-full bg-cream-50/10 flex items-center justify-center mb-4">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbf8f1" stroke-width="2" stroke-linecap="round"><path d="M4 18 h16 M6 18 V10 M10 18 V6 M14 18 V8 M18 18 V12"/></svg>
+        </div>
+        <p class="text-xs uppercase tracking-[0.15em] text-cream-100/60 mb-1">Nov – Feb</p>
+        <h3 class="font-display text-xl font-semibold mb-2">Clean up &amp; mulch</h3>
+        <p class="text-cream-100/80 text-[15px] leading-relaxed">Leaves out, edges cut, real hardwood mulch down. The yard looks finished in January and is ready when things wake up in March.</p>
+      </article>
+    </div>
+    <p class="text-cream-100/50 text-xs mt-6">Timing follows <a href="https://content.ces.ncsu.edu/extension-gardener-handbook/11-woody-ornamentals" target="_blank" rel="noopener noreferrer" class="underline hover:text-cream-50">NC State Extension</a> guidance for the Piedmont.</p>
   </div>
 </section>
 
@@ -337,6 +417,91 @@
         </div>
         <a href="#contact" class="bg-cream-50 hover:bg-cream-100 text-forest-900 px-5 py-2.5 rounded-full font-semibold text-sm self-start transition">Send Photos →</a>
       </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECT PLANNER ============ -->
+<section id="planner" class="py-20 md:py-28 bg-forest-50/60 border-y border-forest-100">
+  <div class="max-w-6xl mx-auto px-5">
+    <div class="max-w-2xl mb-10">
+      <p class="uppercase tracking-[0.2em] text-xs text-forest-500 mb-4">Project Planner</p>
+      <h2 class="font-display font-semibold text-3xl md:text-5xl text-forest-900 leading-tight mb-4">
+        Sketch your winter project in 30 seconds.
+      </h2>
+      <p class="text-forest-900/80 text-lg">Tap what you&rsquo;re thinking about. We&rsquo;ll put together a plan you can send straight to us. No account, no pressure.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start">
+      <!-- Steps -->
+      <div class="lg:col-span-3 space-y-8">
+        <div>
+          <div class="flex items-baseline gap-3 mb-3">
+            <span class="font-display text-forest-500 text-2xl font-semibold">1</span>
+            <h3 class="font-semibold text-forest-900">What are you thinking about?</h3>
+            <span class="text-xs text-forest-900/50">pick any</span>
+          </div>
+          <div id="plan-projects" class="flex flex-wrap gap-2" role="group" aria-label="Project types">
+            <button type="button" class="plan-chip" data-key="patio">Patio &amp; pavers</button>
+            <button type="button" class="plan-chip" data-key="beds">New beds &amp; planting</button>
+            <button type="button" class="plan-chip" data-key="trees">Trees &amp; shrubs</button>
+            <button type="button" class="plan-chip" data-key="prune">Pruning</button>
+            <button type="button" class="plan-chip" data-key="cleanup">Cleanup &amp; mulch</button>
+            <button type="button" class="plan-chip" data-key="fence">Fence or gate</button>
+            <button type="button" class="plan-chip" data-key="build">Treehouse / structure</button>
+            <button type="button" class="plan-chip" data-key="irrigation">Irrigation check</button>
+            <button type="button" class="plan-chip" data-key="wash">Pressure washing</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-baseline gap-3 mb-3">
+            <span class="font-display text-forest-500 text-2xl font-semibold">2</span>
+            <h3 class="font-semibold text-forest-900">When would you like it done?</h3>
+          </div>
+          <div id="plan-timing" class="flex flex-wrap gap-2" role="radiogroup" aria-label="Timing">
+            <button type="button" class="plan-chip" data-key="December">December</button>
+            <button type="button" class="plan-chip" data-key="January">January</button>
+            <button type="button" class="plan-chip" data-key="February">February</button>
+            <button type="button" class="plan-chip" data-key="March">March</button>
+            <button type="button" class="plan-chip" data-key="Flexible">Flexible</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-baseline gap-3 mb-3">
+            <span class="font-display text-forest-500 text-2xl font-semibold">3</span>
+            <h3 class="font-semibold text-forest-900">Rough budget comfort?</h3>
+            <span class="text-xs text-forest-900/50">helps us size the plan</span>
+          </div>
+          <div id="plan-budget" class="flex flex-wrap gap-2" role="radiogroup" aria-label="Budget">
+            <button type="button" class="plan-chip" data-key="Under $500">Under $500</button>
+            <button type="button" class="plan-chip" data-key="$500–$1,500">$500–$1,500</button>
+            <button type="button" class="plan-chip" data-key="$1,500–$5,000">$1,500–$5,000</button>
+            <button type="button" class="plan-chip" data-key="$5,000+">$5,000+</button>
+            <button type="button" class="plan-chip" data-key="Not sure yet">Not sure yet</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary card -->
+      <aside class="lg:col-span-2 lg:sticky lg:top-24">
+        <div id="plan-card" class="bg-white border border-forest-100 rounded-2xl p-6 md:p-7 shadow-sm">
+          <p class="uppercase tracking-[0.2em] text-[11px] text-forest-500 mb-2">Your winter plan</p>
+          <div id="plan-empty" class="text-forest-900/60 text-[15px] leading-relaxed">
+            Pick a project or two and your plan shows up here.
+          </div>
+          <div id="plan-body" class="hidden">
+            <ul id="plan-list" class="space-y-3 mb-5"></ul>
+            <div id="plan-meta" class="text-sm text-forest-900/70 border-t border-forest-100 pt-4 space-y-1"></div>
+            <p id="plan-tip" class="mt-4 text-sm text-forest-900/85 bg-forest-50 rounded-xl p-3"></p>
+            <button type="button" id="plan-send" class="mt-5 w-full bg-forest-700 hover:bg-forest-900 text-cream-50 px-5 py-3 rounded-full font-semibold transition">
+              Send this plan to Zillions →
+            </button>
+            <p class="text-xs text-forest-900/55 text-center mt-2">Fills in the estimate form. You add your name and send.</p>
+          </div>
+        </div>
+      </aside>
     </div>
   </div>
 </section>
@@ -454,6 +619,9 @@
       <div class="aspect-square bg-forest-100 rounded-xl animate-pulse"></div>
       <div class="aspect-square bg-forest-100 rounded-xl animate-pulse"></div>
       <div class="aspect-square bg-forest-100 rounded-xl animate-pulse"></div>
+    </div>
+    <div class="text-center mt-8">
+      <button type="button" id="gallery-more-btn" class="hidden border border-forest-500 text-forest-700 hover:bg-forest-700 hover:text-cream-50 px-6 py-2.5 rounded-full font-semibold text-sm transition">See all photos</button>
     </div>
   </div>
 </section>
@@ -649,8 +817,10 @@
           <option>Yard cleanup</option>
           <option>Pressure washing</option>
           <option>Plantings</option>
+          <option>Winter project (planned on site)</option>
           <option>Not sure — help me figure it out</option>
         </select>
+        <input type="hidden" id="plan" name="plan" value="">
       </div>
 
       <div>
@@ -695,6 +865,19 @@
 <!-- CMS dynamic content loader -->
 <script src="/js/cms-loader.js"></script>
 </footer>
+
+<!-- Gallery lightbox -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button type="button" class="lb-btn" id="lb-close" aria-label="Close" style="top:16px;right:16px;">&times;</button>
+  <button type="button" class="lb-btn" id="lb-prev" aria-label="Previous photo" style="left:12px;top:50%;transform:translateY(-50%);">&#8249;</button>
+  <button type="button" class="lb-btn" id="lb-next" aria-label="Next photo" style="right:12px;top:50%;transform:translateY(-50%);">&#8250;</button>
+  <figure class="m-0 text-center px-14">
+    <img id="lb-img" src="" alt="">
+    <figcaption id="lb-cap" class="text-cream-50 mt-4 text-sm md:text-base max-w-2xl mx-auto"></figcaption>
+    <p id="lb-count" class="text-cream-100/60 text-xs mt-1"></p>
+  </figure>
+</div>
+<script src="/js/winter.js" defer></script>
 
 <!-- Mobile sticky CTA -->
 <a href="#contact" class="sticky-cta md:hidden bg-forest-700 text-cream-50 text-center py-4 font-semibold shadow-lg">
