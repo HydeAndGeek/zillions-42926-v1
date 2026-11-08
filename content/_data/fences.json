@@ -1,10 +1,46 @@
 {
-  "headline": "Vinyl. Wood. Gates. Built to last.",
-  "subhead": "Privacy panels, custom gates, fence repair and replacement. Installed straight, plumbed true.",
+  "headline": "Wood. Vinyl. Ranch rail. Gates.",
+  "subhead": "Privacy panels, post-and-rail, custom gates, fence repair and replacement. Set plumb, strung straight, built to outlast the neighbor's.",
   "items": [
-    { "image": "/images/projects/708.jpg", "title": "Vinyl privacy fence", "caption": "Full panel install with corner post." },
-    { "image": "/images/projects/707.jpg", "title": "Vinyl gate detail",   "caption": "Square posts, clean reveals, hidden hardware." },
-    { "image": "/images/projects/710.jpg", "title": "Vinyl panel + gate",  "caption": "Tight gap, true plumb." },
-    { "image": "/images/projects/879.jpg", "title": "Custom wood gate",    "caption": "New treated pine slotted into existing stained fence." }
+    {
+      "image": "/images/projects/fence-2026-07-sideyard-privacy.jpg",
+      "title": "6-ft wood privacy fence",
+      "caption": "Side-yard run, dog-ear pickets, every post set in concrete."
+    },
+    {
+      "image": "/images/projects/fence-2026-10-gate-aluminum-patio.jpg",
+      "title": "Privacy gate meets aluminum",
+      "caption": "Framed wood gate tied into black aluminum, off a new paver patio."
+    },
+    {
+      "image": "/images/projects/fence-2026-10-black-ranch-rail.jpg",
+      "title": "Black ranch rail",
+      "caption": "Three-rail along the street, mulched and clean."
+    },
+    {
+      "image": "/images/projects/fence-vinyl-privacy-white.jpg",
+      "title": "White vinyl privacy",
+      "caption": "Zero-maintenance panels. Hose it off once a year."
+    },
+    {
+      "image": "/images/projects/fence-2026-07-privacy-brick-bed.jpg",
+      "title": "Fence + planting bed",
+      "caption": "Privacy fence and a new bed along the brick, finished the same day."
+    },
+    {
+      "image": "/images/projects/fence-2026-07-privacy-gate-wrapped.jpg",
+      "title": "Fence with matching gate",
+      "caption": "Privacy run with a framed gate to match. Wrapped and swept."
+    },
+    {
+      "image": "/images/projects/fence-2026-07-post-rail-layout.jpg",
+      "title": "Post-and-rail, day one",
+      "caption": "Posts set and rails strung before lunch. Pickets next."
+    },
+    {
+      "image": "/images/projects/879.jpg",
+      "title": "Custom wood gate",
+      "caption": "New treated pine slotted into an existing stained fence."
+    }
   ]
 }

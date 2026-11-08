@@ -360,7 +360,7 @@ async function loadFences() {
     const items = data.items || [];
     if (!items.length) return;
     grid.innerHTML = items.map(it => `
-      <a href="${it.image}" class="group relative aspect-[3/4] block rounded-xl overflow-hidden bg-forest-100" data-caption="${escapeHtml((it.title || '') + (it.caption ? ' — ' + it.caption : ''))}">
+      <a href="${it.image}" class="group relative aspect-square block rounded-xl overflow-hidden bg-forest-100" data-caption="${escapeHtml((it.title || '') + (it.caption ? ' — ' + it.caption : ''))}">
         <img src="${it.image}" alt="${escapeHtml(it.title || '')}" loading="lazy"
              class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
         <div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-forest-900/90 via-forest-900/40 to-transparent text-cream-50">

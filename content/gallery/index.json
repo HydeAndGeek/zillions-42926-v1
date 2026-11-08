@@ -1,5 +1,40 @@
 [
   {
+    "title": "Privacy gate, aluminum fence, paver patio",
+    "image": "/images/projects/fence-2026-10-gate-aluminum-patio.jpg",
+    "date": "2026-10-31T17:00:00.000Z",
+    "featured": true,
+    "description": "Framed wood privacy gate tied into black aluminum fencing, stepping off a new paver patio."
+  },
+  {
+    "title": "Black ranch rail along the street",
+    "image": "/images/projects/fence-2026-10-black-ranch-rail.jpg",
+    "date": "2026-10-12T16:00:00.000Z",
+    "featured": true,
+    "description": "Three-rail black ranch fence with the bed mulched and edged."
+  },
+  {
+    "title": "Side-yard privacy fence",
+    "image": "/images/projects/fence-2026-07-sideyard-privacy.jpg",
+    "date": "2026-07-08T17:00:00.000Z",
+    "featured": true,
+    "description": "6-ft wood privacy fence down the side yard, posts in concrete, pickets dog-eared."
+  },
+  {
+    "title": "Setting panels",
+    "image": "/images/projects/fence-2026-07-setting-panels.jpg",
+    "date": "2026-07-07T12:00:00.000Z",
+    "featured": true,
+    "description": "Mid-build: posts set, panels going up along the back line."
+  },
+  {
+    "title": "Before: a tired picket gate",
+    "image": "/images/projects/gate-2026-06-weathered-picket-before.jpg",
+    "date": "2026-06-06T15:00:00.000Z",
+    "featured": true,
+    "description": "What twenty Charlotte summers do to a picket gate. This is the kind of thing we replace in a morning."
+  },
+  {
     "title": "Stone path shade garden — ferns, hostas and coral bells",
     "image": "/images/projects/3629.jpg",
     "date": "2026-05-20T14:00:00.000Z",
@@ -119,20 +154,6 @@
     "description": "Weed-choked joints cleaned out. Color brought back."
   },
   {
-    "title": "Vinyl privacy fence — full panel install",
-    "image": "/images/projects/708.jpg",
-    "date": "2026-04-30T10:00:00.000Z",
-    "featured": true,
-    "description": "Full vinyl privacy panel install with corner post. Plumbed true."
-  },
-  {
-    "title": "Vinyl panel + custom gate",
-    "image": "/images/projects/710.jpg",
-    "date": "2026-04-30T09:00:00.000Z",
-    "featured": true,
-    "description": "Tight gap, true plumb. Clean hardware."
-  },
-  {
     "title": "Custom wood gate — treated pine",
     "image": "/images/projects/879.jpg",
     "date": "2026-04-29T15:00:00.000Z",
@@ -152,5 +173,12 @@
     "date": "2026-04-27T15:00:00.000Z",
     "featured": true,
     "description": "Stone edging set, hydrangeas planted, ready for summer."
+  },
+  {
+    "title": "Backyard privacy fence",
+    "image": "/images/projects/fence-backyard-privacy-crape-myrtle.jpg",
+    "date": "2023-09-23T19:00:00.000Z",
+    "featured": true,
+    "description": "Full backyard enclosure worked around a mature crape myrtle."
   }
 ]
