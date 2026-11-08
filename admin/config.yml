@@ -92,6 +92,17 @@ collections:
   - name: settings
     label: "Site Settings"
     files:
+      - file: "content/_data/photostream.json"
+        label: "Fresh From The Field (Google Photos album)"
+        name: "photostream"
+        format: "json"
+        fields:
+          - { name: album_url, label: "Shared Google Photos album link", widget: string, required: false, hint: "In Google Photos: open the album → Share → Create link → paste it here (looks like https://photos.app.goo.gl/...). Photos sync to the site every 3 hours." }
+          - { name: headline, label: "Headline", widget: string, required: false }
+          - { name: subhead, label: "Subhead", widget: text, required: false }
+          - { name: max_items, label: "How many photos to show", widget: number, default: 18, required: false }
+          - { name: updated, label: "Last sync (auto)", widget: hidden, required: false }
+          - { name: items, label: "Photos (auto-filled by sync)", widget: hidden, required: false }
       - file: "content/_data/site.json"
         label: "General Info"
         name: "general"
@@ -106,6 +117,10 @@ collections:
           - { name: tagline, label: "Tagline (under hero title)", widget: string }
           - { name: hero_title, label: "Hero Title", widget: string }
           - { name: hero_subtitle, label: "Hero Subtitle", widget: text }
+          - { name: hero_eyebrow_tag, label: "Hero Tag (after 'Family-Owned ·')", widget: string, required: false, hint: "Short seasonal line in the hero, e.g. 'Now booking winter projects'" }
+          - { name: winter_headline, label: "Winter Section Headline", widget: string, required: false }
+          - { name: winter_intro, label: "Winter Section Intro", widget: text, required: false }
+          - { name: winter_offer, label: "Winter Offer / Season Note", widget: text, required: false, hint: "The big line in the cream card. Change it any time: a promo, a booking deadline, or just 'Now booking Dec–Mar'." }
           - { name: phone, label: "Phone (leave blank to hide)", widget: string, required: false }
           - { name: email, label: "Email (leave blank to hide)", widget: string, required: false }
           - { name: hours, label: "Business Hours", widget: string, default: "Mon–Sat · 7am–6pm" }

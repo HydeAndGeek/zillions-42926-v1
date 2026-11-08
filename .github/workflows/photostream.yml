@@ -1,0 +1,27 @@
+name: Sync Google Photos album → site
+
+on:
+  schedule:
+    - cron: '17 */3 * * *'     # every 3 hours
+  workflow_dispatch:           # "Run workflow" button (GitHub app on phone works)
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install --no-save --no-audit --no-fund google-photos-album-image-url-fetch@3
+      - run: node scripts/sync-photostream.mjs
+      - name: Commit if changed
+        run: |
+          if git diff --quiet content/_data/photostream.json; then echo "no change"; exit 0; fi
+          git config user.name  "photostream-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add content/_data/photostream.json
+          git commit -m "photostream: sync from Google Photos album"
+          git push

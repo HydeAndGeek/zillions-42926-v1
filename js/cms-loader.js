@@ -13,6 +13,10 @@ async function loadSiteSettings() {
     setText('[data-cms="hero_title"]',    s.hero_title);
     setText('[data-cms="hero_subtitle"]', s.hero_subtitle);
     setText('[data-cms="hero_verse"]',    s.hero_verse);
+    setText('[data-cms="hero_eyebrow_tag"]', s.hero_eyebrow_tag);
+    setText('[data-cms="winter_headline"]', s.winter_headline);
+    setText('[data-cms="winter_intro"]',    s.winter_intro);
+    setText('[data-cms="winter_offer"]',    s.winter_offer);
     setText('[data-cms="about_verse"]',   s.about_verse);
     setText('[data-cms="hours"]',         s.hours);
     setText('[data-cms="service_area"]',  s.service_area);
@@ -90,15 +94,22 @@ async function loadGallery() {
     const res = await fetch('/content/gallery/index.json', { cache: 'no-store' });
     if (!res.ok) throw new Error('no manifest');
     const items = await res.json();
-    const featured = items.filter(i => i.featured !== false).slice(0, 12);
+    const featured = items.filter(i => i.featured !== false);
+    const VISIBLE = 12;
 
     if (featured.length === 0) return;
-    grid.innerHTML = featured.map(item => `
-      <a href="${item.image}" class="aspect-square bg-cover bg-center rounded-xl block hover:opacity-90 transition"
-         style="background-image:url('${item.image}')"
-         title="${escapeHtml(item.title || '')}">
+    grid.innerHTML = featured.map((item, i) => `
+      <a href="${item.image}" class="group relative aspect-square block rounded-xl overflow-hidden bg-forest-100 ${i >= VISIBLE ? 'gallery-more is-hidden' : ''}"
+         data-caption="${escapeHtml(item.description || item.title || '')}"
+         title="${escapeHtml(item.title || '')}" aria-label="Open photo: ${escapeHtml(item.title || 'gallery photo')}">
+        <img src="${item.image}" alt="${escapeHtml(item.title || '')}" loading="lazy" decoding="async"
+             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+        ${item.title ? `<div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-forest-900/85 to-transparent text-cream-50 text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">${escapeHtml(item.title)}</div>` : ''}
       </a>
     `).join('');
+    document.dispatchEvent(new CustomEvent('gallery:rendered', {
+      detail: { total: featured.length, hidden: Math.max(0, featured.length - VISIBLE) }
+    }));
   } catch (err) {
     // No manifest yet — leave the static placeholders that exist in HTML
     console.info('Gallery manifest not found, using defaults');
@@ -327,7 +338,7 @@ async function loadPlantings() {
     const items = data.items || [];
     if (!items.length) return;
     grid.innerHTML = items.map(it => `
-      <a href="${it.image}" class="group relative aspect-square block rounded-xl overflow-hidden bg-forest-100">
+      <a href="${it.image}" class="group relative aspect-square block rounded-xl overflow-hidden bg-forest-100" data-caption="${escapeHtml(it.caption || it.title || '')}">
         <img src="${it.image}" alt="${escapeHtml(it.title || '')}" loading="lazy"
              class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
         ${it.caption ? `<div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-forest-900/85 to-transparent text-cream-50 text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">${escapeHtml(it.caption)}</div>` : ''}
@@ -349,7 +360,7 @@ async function loadFences() {
     const items = data.items || [];
     if (!items.length) return;
     grid.innerHTML = items.map(it => `
-      <a href="${it.image}" class="group relative aspect-[3/4] block rounded-xl overflow-hidden bg-forest-100">
+      <a href="${it.image}" class="group relative aspect-[3/4] block rounded-xl overflow-hidden bg-forest-100" data-caption="${escapeHtml((it.title || '') + (it.caption ? ' — ' + it.caption : ''))}">
         <img src="${it.image}" alt="${escapeHtml(it.title || '')}" loading="lazy"
              class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
         <div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-forest-900/90 via-forest-900/40 to-transparent text-cream-50">
@@ -361,6 +372,35 @@ async function loadFences() {
   } catch { /* silent */ }
 }
 
+
+// ----- 6b. Photostream (auto-synced Google Photos album) ----------------
+async function loadPhotostream() {
+  const section = document.querySelector('[data-cms="photostream-section"]');
+  const grid = document.querySelector('[data-cms="photostream-grid"]');
+  if (!section || !grid) return;
+  try {
+    const res = await fetch('/content/_data/photostream.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const items = data.items || [];
+    if (!items.length) return;
+    setText('[data-cms="photostream_headline"]', data.headline);
+    setText('[data-cms="photostream_subhead"]',  data.subhead);
+    if (data.updated) {
+      const d = new Date(data.updated);
+      setText('[data-cms="photostream_updated"]', 'Updated ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    }
+    grid.innerHTML = items.map((it, i) => `
+      <a href="${it.full}" class="group relative aspect-square block rounded-xl overflow-hidden bg-forest-100"
+         data-caption="${escapeHtml(it.caption || '')}" aria-label="Open photo ${i + 1}">
+        <img src="${it.thumb}" alt="${escapeHtml(it.caption || 'Recent job-site photo')}" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+      </a>
+    `).join('');
+    section.hidden = false;
+  } catch { /* silent */ }
+}
+
 // ----- 7. Run on page load --------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   loadSiteSettings();
@@ -369,4 +409,5 @@ document.addEventListener('DOMContentLoaded', () => {
   loadMaintenance();
   loadPlantings();
   loadFences();
+  loadPhotostream();
 });
