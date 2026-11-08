@@ -129,11 +129,12 @@
   const lbImg = $('lb-img'), lbCap = $('lb-cap'), lbCount = $('lb-count');
   let items = [], idx = 0, lastFocus = null;
 
-  const GRIDS = '[data-cms="gallery-grid"], [data-cms="plantings-grid"], [data-cms="fences-grid"]';
+  const isImg = (h) => /\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(h) || /googleusercontent\.com\//.test(h);
+  const GRIDS = '[data-cms="gallery-grid"], [data-cms="plantings-grid"], [data-cms="fences-grid"], [data-cms="photostream-grid"]';
 
   function collect(grid) {
     return [...grid.querySelectorAll('a[href]')]
-      .filter(a => !a.classList.contains('is-hidden') && /\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(a.getAttribute('href')))
+      .filter(a => !a.classList.contains('is-hidden') && isImg(a.getAttribute('href')))
       .map(a => ({
         src: a.getAttribute('href'),
         cap: a.dataset.caption || a.getAttribute('title') || a.querySelector('img')?.alt || ''
@@ -143,7 +144,7 @@
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href]'); if (!a) return;
     const grid = a.closest(GRIDS); if (!grid) return;
-    if (!/\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(a.getAttribute('href'))) return;
+    if (!isImg(a.getAttribute('href'))) return;
     e.preventDefault();
     items = collect(grid);
     idx = Math.max(0, items.findIndex(it => it.src === a.getAttribute('href')));

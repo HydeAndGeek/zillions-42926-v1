@@ -372,6 +372,35 @@ async function loadFences() {
   } catch { /* silent */ }
 }
 
+
+// ----- 6b. Photostream (auto-synced Google Photos album) ----------------
+async function loadPhotostream() {
+  const section = document.querySelector('[data-cms="photostream-section"]');
+  const grid = document.querySelector('[data-cms="photostream-grid"]');
+  if (!section || !grid) return;
+  try {
+    const res = await fetch('/content/_data/photostream.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const items = data.items || [];
+    if (!items.length) return;
+    setText('[data-cms="photostream_headline"]', data.headline);
+    setText('[data-cms="photostream_subhead"]',  data.subhead);
+    if (data.updated) {
+      const d = new Date(data.updated);
+      setText('[data-cms="photostream_updated"]', 'Updated ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    }
+    grid.innerHTML = items.map((it, i) => `
+      <a href="${it.full}" class="group relative aspect-square block rounded-xl overflow-hidden bg-forest-100"
+         data-caption="${escapeHtml(it.caption || '')}" aria-label="Open photo ${i + 1}">
+        <img src="${it.thumb}" alt="${escapeHtml(it.caption || 'Recent job-site photo')}" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+      </a>
+    `).join('');
+    section.hidden = false;
+  } catch { /* silent */ }
+}
+
 // ----- 7. Run on page load --------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   loadSiteSettings();
@@ -380,4 +409,5 @@ document.addEventListener('DOMContentLoaded', () => {
   loadMaintenance();
   loadPlantings();
   loadFences();
+  loadPhotostream();
 });
